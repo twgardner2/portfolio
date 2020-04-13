@@ -48,8 +48,7 @@ def calculate_shares(date, account, symbol, transactions):
 
 
 def construct_shares_df(date_range, account, transactions):
-    df = pd.DataFrame()
-    df['date'] = date_range
+    df = pd.DataFrame(index=date_range)
 
     account_transactions = transactions.query('account == @account')
     # print(account_transactions)
@@ -65,21 +64,26 @@ def construct_shares_df(date_range, account, transactions):
 
         df[symbol] = symbol_shares
 
+    # df.set_index('date')
     # print(df)
     return(df)
 
 
 def construct_account_values(shares_df, prices_df):
-    # account_symbols = shares_df.columns
-    print(shares_df.index)
-    print(prices_df.index)
-    # df = shares_df.merge(prices_df,
-    #                      #  on='date',
-    #                      left_index=True,
-    #                      right_index=True,
-    #                      how='left',
-    #                      suffixes=('_shares', '_price'))
-    # return(df)
+    account_symbols = shares_df.columns
+
+    account_prices = prices_df.loc[:, account_symbols]
+
+    df = shares_df.merge(account_prices,
+                         left_index=True,
+                         right_index=True,
+                         how='left',
+                         suffixes=('_shares', '_price'))
+
+    df[f'{account_symbols[0]}_value'] = df[f'{account_symbols[0]}_shares'] * \
+        df[f'{account_symbols[0]}_price']
+
+    return(df)
 
 
 # util.backup_data_file('prices.csv')

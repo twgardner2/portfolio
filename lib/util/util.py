@@ -22,16 +22,16 @@ def read_timeseries_csv(file):
 
 
 def date_range_generator(start, end):
+
     date = start
-    date_range = (start,)
+    date_range = [start]
 
     while date < end:
         date = date + relativedelta(months=1)
-        date_range = date_range + (date,)
+        date_range.append(date)
 
-    print(type(date_range))
-
-    return(date_range)
+    date_range = pd.to_datetime(date_range)
+    return (date_range)
 
 
 def backup_data_file(fn):
