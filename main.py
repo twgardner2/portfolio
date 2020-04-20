@@ -1,18 +1,18 @@
+# %%
 import datetime
 from dateutil.relativedelta import relativedelta
 import csv
 import pandas as pd
 import requests
 import json
-from lib.api import fetch_price_history
-# from lib.api import construct_price_history
-# import lib.api.construct_price_history as construct_price_history
+# from lib.api import fetch_price_history
 from lib.api.construct_price_history import construct_price_history
-# from lib.util import util
+import lib.calc.calc as calc
 import lib.util.util as util
+import matplotlib.pyplot as plt
+from pprint import pprint
 
-# print(pd.show_versions())
-
+# %%
 # Environment Variables ###########################
 # Determine date bounds
 start_date = datetime.date(2010, 5, 1)
@@ -21,88 +21,59 @@ today = datetime.date.today()
 end_date = datetime.date(today.year, today.month + 1, 1)
 ###################################################
 
-# print(util.dateparse('19820623'))
-
+# %%
 # Read data #######################################
 transactions = util.read_timeseries_csv('./data/transactions.csv')
 # print(transactions)
-# print(transactions.index)
 
+# %%
 prices = util.read_timeseries_csv('./data/prices.csv')
 # print(prices)
 
-# positions = transactions["symbol"].unique()
-# accounts = transactions["account"].unique()
+positions = transactions["symbol"].unique()
+accounts = transactions["account"].unique()
 
 ###################################################
-
+# %%
 date_range = util.date_range_generator(start_date, end_date)
 
 
-def calculate_shares(date, account, symbol, transactions):
-    symbol_transactions = transactions.query(
-        'symbol == @symbol & account == @account & date <= @date')  #
-    shares = symbol_transactions['shares'].sum()
+# Create dict of dfs of account values ####
 
-    return (shares)
+all_accounts = {}
 
+for index, account in enumerate(accounts):
+    shares = calc.construct_shares_df(date_range, account, transactions)
+    values = calc.calculate_account_values(shares, prices)
+    all_accounts[account] = values
 
-def construct_shares_df(date_range, account, transactions):
-    df = pd.DataFrame(index=date_range)
-
-    account_transactions = transactions.query('account == @account')
-    # print(account_transactions)
-    account_symbols = account_transactions['symbol'].unique()
-    # print(account_symbols)
-
-    for symbol in account_symbols:
-        symbol_shares = []
-        for date in date_range:
-            shares_amount = calculate_shares(
-                date, account, symbol, transactions)
-            symbol_shares.append(shares_amount)
-
-        df[symbol] = symbol_shares
-
-    # df.set_index('date')
-    # print(df)
-    return(df)
+pprint(all_accounts)
+########################################################
 
 
-def construct_account_values(shares_df, prices_df):
-    account_symbols = shares_df.columns
+# brokerage_shares = calc.construct_shares_df(
+#     date_range, "brokerage", transactions)
+# # brokerage_shares.to_csv('brokerage_shares.csv')
 
-    account_prices = prices_df.loc[:, account_symbols]
+# j_ira_shares = calc.construct_shares_df(date_range, "j_ira", transactions)
+# # j_ira_shares.to_csv('j_ira_shares.csv')
 
-    df = shares_df.merge(account_prices,
-                         left_index=True,
-                         right_index=True,
-                         how='left',
-                         suffixes=('_shares', '_price'))
+# # t_ira_shares = construct_shares_df(date_range, "t_ira", transactions)
+# # t_ira_shares.to_csv('t_ira_shares.csv')
 
-    for symbol in account_symbols:
-        df[f'{symbol}_value'] = df[f'{symbol}_shares'] * df[f'{symbol}_price']
+# # brokerage_values = calculate_account_values(brokerage_shares, prices)
 
-    # df[f'{account_symbols[0]}_value'] = df[f'{account_symbols[0]}_shares'] * \
-    #     df[f'{account_symbols[0]}_price']
-
-    df['total_value'] = df.filter(regex='_value$').sum(axis=1)
-
-    return(df)
+# # brokerage_values = calculate_account_values(brokerage_shares, prices)
+# # print(brokerage_values)
 
 
-# util.backup_data_file('prices.csv')
-# construct_price_history(date_range, positions)
-brokerage_shares = construct_shares_df(date_range, "brokerage", transactions)
-# brokerage_shares.to_csv('brokerage_shares.csv')
+# j_ira_values = calc.calculate_account_values(j_ira_shares, prices)
+# # print(j_ira_values)
 
-# j_ira_shares = construct_shares_df(date_range, "j_ira", transactions)
-# j_ira_shares.to_csv('j_ira_shares.csv')
-
-# t_ira_shares = construct_shares_df(date_range, "t_ira", transactions)
-# t_ira_shares.to_csv('t_ira_shares.csv')
-
-# brokerage_values = construct_account_values(brokerage_shares, prices)
-
-df = construct_account_values(brokerage_shares, prices)
-print(df)
+# # plt.plot(index, 'total_value', data=j_ira_values, marker='o', markerfacecolor='blue',
+# #          markersize=12, color='skyblue', linewidth=4)
+# plt.plot(j_ira_values.index, j_ira_values['total_value'], marker='', markerfacecolor='blue',
+#          markersize=12, color='skyblue', linewidth=4)
+# # plt.show()
+# plt.savefig('j_ira.png')
+# %%
