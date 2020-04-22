@@ -51,9 +51,10 @@ def calculate_account_values(shares_df, prices_df):
     for symbol in account_symbols:
         df[f'{symbol}_value'] = df[f'{symbol}_shares'] * df[f'{symbol}_price']
 
-    # df[f'{account_symbols[0]}_value'] = df[f'{account_symbols[0]}_shares'] * \
-    #     df[f'{account_symbols[0]}_price']
-
     df['total_value'] = df.filter(regex='_value$').sum(axis=1)
 
     return(df)
+
+
+def calculate_grand_total_value(all_accounts):
+    grand_total = pd.DataFrame()
