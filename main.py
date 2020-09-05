@@ -7,7 +7,7 @@ import json
 from lib.api.construct_price_history import construct_price_history
 import lib.calc.calc as calc
 import lib.util.util as util
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from pprint import pprint
 
 # Environment Variables ###########################
@@ -15,7 +15,8 @@ from pprint import pprint
 start_date = datetime.date(2010, 5, 1)
 
 today = datetime.date.today()
-end_date = datetime.date(today.year, today.month + 1, 1)
+# end_date = datetime.date(today.year, today.month + 1, 1)
+end_date = datetime.date(today.year, 4, 1)
 ###################################################
 
 # Read data #######################################
@@ -37,6 +38,12 @@ class Account:
         self.transactions = transactions
         self.prices = prices
 
+    def dummy_method(self):
+        print(f'This is a dummy method to print out the name: {self.name}')
+
+    def values_method(self):
+        pass
+
     @staticmethod
     def calculate_shares(date, account, symbol, transactions):
         '''Calculates the number of shares of a symbol on a date'''
@@ -46,21 +53,21 @@ class Account:
 
         return (shares)
 
-    def construct_shares_df(self, date_range, account, transactions):
+    def construct_shares_df(self):
         '''Constructs df of shares for each symbol over date_range for account'''
 
-        df = pd.DataFrame(index=date_range)
+        df = pd.DataFrame(index=self.date_range)
 
-        account_transactions = transactions.query('account == @account')
+        account_transactions = transactions.query('account == @self.name')
         # print(account_transactions)
         account_symbols = account_transactions['symbol'].unique()
         # print(account_symbols)
 
         for symbol in account_symbols:
             symbol_shares = []
-            for date in date_range:
-                shares_amount = calculate_shares(
-                    date, account, symbol, transactions)
+            for date in self.date_range:
+                shares_amount = self.calculate_shares(
+                    date, self.name, symbol, self.transactions)
                 symbol_shares.append(shares_amount)
 
             df[symbol] = symbol_shares
@@ -69,19 +76,20 @@ class Account:
         # print(df)
         return(df)
 
-    def calculate_account_values(self, shares_df, prices_df):
-        ''' Calculates the value of shares and the entire account given a date 
-        indexed dataframe of shares and the date indexed dataframe of position 
+    def calculate_account_values(self):
+        ''' Calculates the value of shares and the entire account given a date
+        indexed dataframe of shares and the date indexed dataframe of position
         prices '''
-        account_symbols = shares_df.columns
+        account_shares = self.construct_shares_df()
+        account_symbols = account_shares.columns
 
-        account_prices = prices_df.loc[:, account_symbols]
+        account_prices = self.prices.loc[:, account_symbols]
 
-        df = shares_df.merge(account_prices,
-                             left_index=True,
-                             right_index=True,
-                             how='left',
-                             suffixes=('_shares', '_price'))
+        df = account_shares.merge(account_prices,
+                                  left_index=True,
+                                  right_index=True,
+                                  how='left',
+                                  suffixes=('_shares', '_price'))
 
         for symbol in account_symbols:
             df[f'{symbol}_value'] = df[f'{symbol}_shares'] * \
@@ -93,9 +101,13 @@ class Account:
 
 
 t_ira = Account('t_ira', date_range, transactions, prices)
+j_ira = Account('j_ira', date_range, transactions, prices)
+brokerage = Account('brokerage', date_range, transactions, prices)
+# print(j_ira.construct_shares_df())
+# print(t_ira.construct_shares_df())
 
-print(t_ira.date_range)
-
+# print(t_ira.calculate_account_values())
+print(brokerage.calculate_account_values())
 
 # Create dict of dfs of account values ####
 
