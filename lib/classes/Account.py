@@ -12,8 +12,19 @@ class Account:
     def calculate_shares(date, account, symbol, transactions):
         '''Calculates the number of shares of a symbol on a date'''
         symbol_transactions = transactions.query(
-            'symbol == @symbol & account == @account & date <= @date')  #
-        shares = symbol_transactions['shares'].sum()
+            'symbol == @symbol & account == @account & date <= @date'
+        )
+        shares = 0
+        for index, row in symbol_transactions.iterrows():
+            if row['type'] in ['purchase', 'div_reinvest']:
+                shares = shares + float(row['shares'])
+            if row['type'] in ['sale']:
+                if row['shares'] == 'all':
+                    shares = 0
+                elif isinstance(row['shares'], float) or isinstance(row['shares'], int):
+                    shares = shares + float(row['shares'])
+            if row['type'] in ['split']:
+                shares = shares * float(row['shares'])
 
         return (shares)
 

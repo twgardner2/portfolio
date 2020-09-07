@@ -3,6 +3,8 @@ from lib.api.construct_price_history import construct_price_history
 import lib.util.util as util
 from pprint import pprint
 from lib.classes.Account import Account
+import matplotlib.pyplot as plt
+import numpy as np
 
 # Environment Variables ###########################
 # Determine date bounds
@@ -23,47 +25,46 @@ accounts = transactions["account"].unique()
 date_range = util.date_range_generator(start_date, end_date)
 
 # Create accounts #################################
-t_ira = Account('t_ira', date_range, transactions, prices)
-j_ira = Account('j_ira', date_range, transactions, prices)
+# t_ira = Account('t_ira', date_range, transactions, prices)
+# j_ira = Account('j_ira', date_range, transactions, prices)
 brokerage = Account('brokerage', date_range, transactions, prices)
 
-print(brokerage.calculate_account_values())
+print(brokerage.construct_shares_df())
 
 # Create dict of dfs of account values ####
 
 # all_accounts = {}
 
-# for index, account in enumerate(accounts):
-#     shares = calc.construct_shares_df(date_range, account, transactions)
-#     values = calc.calculate_account_values(shares, prices)
-#     all_accounts[account] = values
+# # for account in enumerate(accounts):
+# for account in accounts:
+#     all_accounts[account] = Account(account, date_range, transactions, prices)
 
 # pprint(all_accounts)
 ########################################################
 
 
-# brokerage_shares = calc.construct_shares_df(
-#     date_range, "brokerage", transactions)
-# # brokerage_shares.to_csv('brokerage_shares.csv')
+# plt.plot(all_accounts['j_ira'].date_range,
+#          all_accounts['j_ira'].calculate_account_values().total_value, '-')
+# plt.plot(all_accounts['t_ira'].date_range,
+#          all_accounts['t_ira'].calculate_account_values().total_value, '-')
+# plt.plot(all_accounts['brokerage'].date_range,
+#          all_accounts['brokerage'].calculate_account_values().total_value, '-')
 
-# j_ira_shares = calc.construct_shares_df(date_range, "j_ira", transactions)
-# # j_ira_shares.to_csv('j_ira_shares.csv')
+# plt.xlabel("Feature")
+# plt.ylabel("Target")
+# plt.show()
 
-# # t_ira_shares = construct_shares_df(date_range, "t_ira", transactions)
-# # t_ira_shares.to_csv('t_ira_shares.csv')
+# fig = plt.figure()
+# ax = plt.axes()
 
-# # brokerage_values = calculate_account_values(brokerage_shares, prices)
+# x = np.linspace(0, 10, 1000)
+# ax.plot(x, np.sin(x)).show()
 
-# # brokerage_values = calculate_account_values(brokerage_shares, prices)
-# # print(brokerage_values)
-
-
-# j_ira_values = calc.calculate_account_values(j_ira_shares, prices)
-# # print(j_ira_values)
-
-# # plt.plot(index, 'total_value', data=j_ira_values, marker='o', markerfacecolor='blue',
-# #          markersize=12, color='skyblue', linewidth=4)
+# plt.plot(index, 'total_value', data=j_ira_values, marker='o', markerfacecolor='blue',
+#          markersize=12, color='skyblue', linewidth=4)
+# plt('index', 'total_value', data=all_accounts['j_ira'], marker='o', markerfacecolor='blue',
+#     markersize=12, color='skyblue', linewidth=4)
 # plt.plot(j_ira_values.index, j_ira_values['total_value'], marker='', markerfacecolor='blue',
 #          markersize=12, color='skyblue', linewidth=4)
 # # plt.show()
-# plt.savefig('j_ira.png')
+# plt.savefig('j_eira.png')
