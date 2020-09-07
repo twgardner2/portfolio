@@ -11,8 +11,8 @@ import numpy as np
 start_date = datetime.date(2010, 5, 1)
 
 today = datetime.date.today()
-# end_date = datetime.date(today.year, today.month + 1, 1)
-end_date = datetime.date(today.year, 4, 1)
+end_date = datetime.date(today.year, today.month + 1, 1)
+# end_date = datetime.date(today.year, 4, 1)
 ###################################################
 
 # Read data #######################################
@@ -25,11 +25,13 @@ accounts = transactions["account"].unique()
 date_range = util.date_range_generator(start_date, end_date)
 
 # Create accounts #################################
-# t_ira = Account('t_ira', date_range, transactions, prices)
-# j_ira = Account('j_ira', date_range, transactions, prices)
+t_ira = Account('t_ira', date_range, transactions, prices)
+j_ira = Account('j_ira', date_range, transactions, prices)
 brokerage = Account('brokerage', date_range, transactions, prices)
 
-print(brokerage.construct_shares_df())
+# print(brokerage.construct_shares_df())
+print(t_ira.construct_shares_df())
+# print(j_ira.construct_shares_df())
 
 # Create dict of dfs of account values ####
 
