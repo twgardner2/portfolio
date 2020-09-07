@@ -13,7 +13,7 @@ class Account:
         '''Calculates the number of shares of a symbol on a date'''
         symbol_transactions = transactions.query(
             'symbol == @symbol & account == @account & date <= @date'
-        )
+        ).sort_values(by='date')
         shares = 0
         for index, row in symbol_transactions.iterrows():
             if row['type'] in ['purchase', 'div_reinvest']:
