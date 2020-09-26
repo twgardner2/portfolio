@@ -30,7 +30,8 @@ j_ira = Account('j_ira', date_range, transactions, prices)
 brokerage = Account('brokerage', date_range, transactions, prices)
 
 # print(brokerage.construct_shares_df())
-print(t_ira.construct_shares_df())
+print(t_ira.calculate_account_values())
+# print(brokerage.calculate_account_values())
 # print(j_ira.construct_shares_df())
 
 # Create dict of dfs of account values ####
