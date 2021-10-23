@@ -1,5 +1,5 @@
 import datetime
-from lib.api.construct_price_history import construct_price_history
+# from lib.api.construct_price_history import construct_price_history
 import lib.util.util as util
 from pprint import pprint
 from lib.classes.Account import Account
@@ -28,6 +28,10 @@ date_range = util.date_range_generator(start_date, end_date)
 t_ira = Account('t_ira', date_range, transactions, prices)
 j_ira = Account('j_ira', date_range, transactions, prices)
 brokerage = Account('brokerage', date_range, transactions, prices)
+
+
+# construct_shares_df
+# calculate_account_values
 
 # print(brokerage.construct_shares_df())
 print(t_ira.calculate_account_values())

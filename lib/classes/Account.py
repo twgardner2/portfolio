@@ -72,4 +72,8 @@ class Account:
 
         df['total_value'] = df.filter(regex='_value$').sum(axis=1)
 
+        ###
+        df = df.filter(regex='_value$')
+        ###
+
         return(df)
