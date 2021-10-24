@@ -17,12 +17,12 @@ class Account:
         shares = 0
         for index, row in symbol_transactions.iterrows():
             if row['type'] in ['purchase', 'div_reinvest']:
-                shares = shares + float(row['shares'])
+                shares = shares + abs(float(row['shares']))
             if row['type'] in ['sale']:
                 if row['shares'] == 'all':
                     shares = 0
-                elif isinstance(row['shares'], float) or isinstance(row['shares'], int):
-                    shares = shares + float(row['shares'])
+                else:
+                    shares = shares - abs(float(row['shares']))
             if row['type'] in ['split']:
                 shares = shares * float(row['shares'])
 
