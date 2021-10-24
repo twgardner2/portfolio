@@ -11,12 +11,13 @@ import numpy as np
 start_date = datetime.date(2010, 5, 1)
 
 today = datetime.date.today()
-end_date = datetime.date(today.year, today.month + 1, 1)
-# end_date = datetime.date(today.year, 4, 1)
+# end_date = datetime.date(today.year, today.month + 1, 1)
+end_date = datetime.date(today.year, 10, 1)
 ###################################################
 
 # Read data #######################################
 transactions = util.read_timeseries_csv('./data/transactions.csv')
+print(transactions.dtypes)
 prices = util.read_timeseries_csv('./data/prices.csv')
 positions = transactions["symbol"].unique()
 accounts = transactions["account"].unique()
@@ -25,28 +26,45 @@ accounts = transactions["account"].unique()
 date_range = util.date_range_generator(start_date, end_date)
 
 # Create accounts #################################
-t_ira = Account('t_ira', date_range, transactions, prices)
-j_ira = Account('j_ira', date_range, transactions, prices)
-brokerage = Account('brokerage', date_range, transactions, prices)
+# t_ira = Account('t_ira', date_range, transactions, prices)
+# j_ira = Account('j_ira', date_range, transactions, prices)
+# brokerage = Account('brokerage', date_range, transactions, prices)
+# trey_529 = Account('trey_529', date_range, transactions, prices)
 
 
 # construct_shares_df
 # calculate_account_values
 
 # print(brokerage.construct_shares_df())
-print(t_ira.calculate_account_values())
+# print(t_ira.calculate_account_values())
 # print(brokerage.calculate_account_values())
 # print(j_ira.construct_shares_df())
 
+
 # Create dict of dfs of account values ####
+all_accounts = {}
 
-# all_accounts = {}
+# for account in enumerate(accounts):
+for account in accounts:
+    all_accounts[account] = Account(account, date_range, transactions, prices)
 
-# # for account in enumerate(accounts):
-# for account in accounts:
-#     all_accounts[account] = Account(account, date_range, transactions, prices)
+print(all_accounts['trey_529'].construct_shares_df())
 
-# pprint(all_accounts)
+all_accounts['trey_529'].construct_shares_df().to_csv('output/trey529_shares.csv')
+
+# trey529_shares = all_accounts['trey_529'].construct_shares_df()
+# with open('output/trey529_shares', 'w') as file:
+#     file.write(str(trey529_shares))
+
+
+
+
+# print(all_accounts['trey_529'].construct_shares_df())
+# print(all_accounts['trey_529'].construct_shares_df())
+# print(all_accounts['trey_529'].date_range)
+# print(all_accounts['trey_529'].calculate_account_values())
+
+pprint(all_accounts)
 ########################################################
 
 
@@ -56,10 +74,11 @@ print(t_ira.calculate_account_values())
 #          all_accounts['t_ira'].calculate_account_values().total_value, '-')
 # plt.plot(all_accounts['brokerage'].date_range,
 #          all_accounts['brokerage'].calculate_account_values().total_value, '-')
-
+plt.plot(all_accounts['trey_529'].date_range,
+         all_accounts['trey_529'].calculate_account_values().total_value, '-')
 # plt.xlabel("Feature")
 # plt.ylabel("Target")
-# plt.show()
+plt.show()
 
 # fig = plt.figure()
 # ax = plt.axes()
@@ -74,4 +93,4 @@ print(t_ira.calculate_account_values())
 # plt.plot(j_ira_values.index, j_ira_values['total_value'], marker='', markerfacecolor='blue',
 #          markersize=12, color='skyblue', linewidth=4)
 # # plt.show()
-# plt.savefig('j_eira.png')
+# plt.savefig('j_ira.png')
