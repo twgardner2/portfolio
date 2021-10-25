@@ -16,14 +16,14 @@ class Account:
         ).sort_values(by='date')
         shares = 0
         for index, row in symbol_transactions.iterrows():
-            if row['type'] in ['purchase', 'div_reinvest']:
+            if row['type'].strip in ['purchase', 'div_reinvest', 'stock_dividend']:
                 shares = shares + abs(float(row['shares']))
-            if row['type'] in ['sale']:
-                if row['shares'] == 'all':
+            elif row['type'].strip in ['sale']:
+                if row['shares'].strip() == 'all':
                     shares = 0
                 else:
                     shares = shares - abs(float(row['shares']))
-            if row['type'] in ['split']:
+            elif row['type'] in ['split']:
                 shares = shares * float(row['shares'])
 
         return (shares)
