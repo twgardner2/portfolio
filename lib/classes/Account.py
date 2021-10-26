@@ -16,9 +16,9 @@ class Account:
         ).sort_values(by='date')
         shares = 0
         for index, row in symbol_transactions.iterrows():
-            if row['type'].strip in ['purchase', 'div_reinvest', 'stock_dividend']:
+            if row['type'].strip() in ['purchase', 'div_reinvest', 'stock_dividend', 'ltcp_reinv']:
                 shares = shares + abs(float(row['shares']))
-            elif row['type'].strip in ['sale']:
+            elif row['type'].strip() in ['sale', 'fee']:
                 if row['shares'].strip() == 'all':
                     shares = 0
                 else:
