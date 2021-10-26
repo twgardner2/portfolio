@@ -2,3 +2,4 @@ data/
 lib/api/
 *.pyc
 output/
+*.ods
