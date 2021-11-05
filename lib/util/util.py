@@ -22,9 +22,24 @@ def read_timeseries_csv(file):
 
 
 def date_range_generator(start, end):
+    '''Create a series of the 1st of each month between the start and end 
+    dates'''
 
-    date = start
-    date_range = [start]
+    if start.day == 1:
+        first_date = start
+    else:
+        year = start.year
+        month = start.month
+        day = 1
+        if month == 12:
+            month = 1
+            year = year + 1
+        else:
+            month = month + 1
+        first_date = datetime.datetime(year=year, month=month+1, day=1)
+
+    date = first_date
+    date_range = [first_date]
 
     while date < end:
         date = date + relativedelta(months=1)
