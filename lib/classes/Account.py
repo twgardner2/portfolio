@@ -1,54 +1,89 @@
 import pandas as pd
+import lib.util.util as util
+
 
 
 class Account:
-    def __init__(self, name, date_range, transactions, prices):
+    def __init__(self, name, date_range, trans, prices):
         self.name = name
-        self.date_range = date_range
-        self.transactions = transactions
-        self.prices = prices
+        self.trans = trans[trans['account']==name]
+        self.symbols = self.trans['symbol'].unique()
+        self.start_date = self.trans.index.min()
+        self.end_date = pd.to_datetime('today')
+        self.date_range = util.date_range_generator(self.start_date, self.end_date)
+        self.prices = prices.loc[prices.index>=self.start_date, self.symbols]
 
     @staticmethod
-    def calculate_shares(date, account, symbol, transactions):
+    def calculate_shares_on_date(date, symbol, trans):
         '''Calculates the number of shares of a symbol on a date'''
-        symbol_transactions = transactions.query(
-            'symbol == @symbol & account == @account & date <= @date'
-        ).sort_values(by='date')
+
+        # Filter transactions for symbol and those before 'date', sort by 'date'
+        symbol_trans = trans.loc[
+                            (trans.index<=date) & 
+                            (trans.symbol==symbol), 
+                        ].sort_values(by='date')
+
+        # Initialize shares to 0
         shares = 0
-        for index, row in symbol_transactions.iterrows():
+
+        # Iterate over filtered transactions
+        for index, row in symbol_trans.iterrows():
+            # Stock increases
             if row['type'].strip() in ['purchase', 'div_reinvest', 'stock_dividend', 'ltcp_reinvest']:
                 shares = shares + abs(float(row['shares']))
+            # Stock decreases
             elif row['type'].strip() in ['sale', 'fee']:
                 if row['shares'].strip() == 'all':
                     shares = 0
                 else:
                     shares = shares - abs(float(row['shares']))
+            # Splits
             elif row['type'] in ['split']:
                 shares = shares * float(row['shares'])
 
         return (shares)
+    
 
     def construct_shares_df(self):
-        '''Constructs df of shares for each symbol over date_range for account'''
+        '''Constructs df of shares for each symbol over date_range for 
+        account'''
 
-        df = pd.DataFrame(index=self.date_range)
+        # Create dataframe to populate
+        df = pd.DataFrame(index=self.date_range, columns=self.symbols)
 
-        account_transactions = self.transactions.query('account == @self.name')
-        # print(account_transactions)
-        account_symbols = account_transactions['symbol'].unique()
-        # print(account_symbols)
+        # Iterate over symbols in account
+        for symbol in self.symbols:
+            # Calculate shares on starting date
+            df[symbol].iloc[0] = self.calculate_shares_on_date(df.iloc[0].name, symbol, self.trans)
 
-        for symbol in account_symbols:
-            symbol_shares = []
-            for date in self.date_range:
-                shares_amount = self.calculate_shares(
-                    date, self.name, symbol, self.transactions)
-                symbol_shares.append(shares_amount)
+            symbol_trans = self.trans[self.trans['symbol']==symbol]
 
-            df[symbol] = symbol_shares
+            # Iterate over index of dataframe to populate
+            for i, date in enumerate(df.index):
+                # Skip first row which we already populated
+                if i==0:
+                    continue
+                
+                period_trans = symbol_trans[
+                                    (symbol_trans.index>df.index[i-1]) &
+                                    (symbol_trans.index<=df.index[i])
+                                ].sort_values(by='date')
 
-        # df.set_index('date')
-        # print(df)
+                # Shares at beginning of period
+                shares  = df[symbol].iloc[i-1]
+
+                for index, row in period_trans.iterrows():
+                    if row['type'] in ['purchase', 'div_reinvest', 'stock_dividend', 'ltcp_reinvest']:
+                        shares += abs(float(row['shares']))
+                    elif row['type'] in ['sale', 'fee']:
+                        if row['shares'] == 'all':
+                            shares = 0
+                        else:
+                            shares += -abs(float(row['shares']))
+                    elif row['type'] in ['split']:
+                        shares += shares*(abs(float(row['shares']))-1)
+                df[symbol].iloc[i] = shares
+
         return(df)
 
     def calculate_account_values(self):
@@ -71,9 +106,6 @@ class Account:
                 df[f'{symbol}_price']
 
         df['total_value'] = df.filter(regex='_value$').sum(axis=1)
-
-        ###
         df = df.filter(regex='_value$')
-        ###
 
         return(df)
