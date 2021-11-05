@@ -8,6 +8,8 @@ import numpy as np
 
 import timeit
 
+import plotly.graph_objects as go
+
 # Environment Variables ########################################################
 # Determine date bounds
 start_date = datetime.date(2010, 5, 1)
@@ -48,37 +50,62 @@ for account in accounts:
 
 # Plot account values ##########################################################
 
-plt.plot(all_accounts['j_ira'].date_range,
-         all_accounts['j_ira'].calculate_account_values().total_value, '-')
-plt.plot(all_accounts['t_ira'].date_range,
-         all_accounts['t_ira'].calculate_account_values().total_value, '-')
-plt.plot(all_accounts['brokerage'].date_range,
-         all_accounts['brokerage'].calculate_account_values().total_value, '-')
-plt.plot(all_accounts['trey_529'].date_range,
-         all_accounts['trey_529'].calculate_account_values().total_value, '-')
-plt.plot(all_accounts['louisa_529'].date_range,
-         all_accounts['louisa_529'].calculate_account_values().total_value, '-')
-plt.plot(all_accounts['george_529'].date_range,
-         all_accounts['george_529'].calculate_account_values().total_value, '-')
-plt.plot(all_accounts['tsp_mil'].date_range,
-         all_accounts['tsp_mil'].calculate_account_values().total_value, '-')
-# plt.plot(thrivent.date_range,
-#          thrivent.calculate_account_values().total_value, '-')
-# plt.plot(brokerage.date_range,
-#          brokerage.calculate_account_values().total_value, '-')
-# plt.plot(metron_401k.date_range,
-#          metron_401k.calculate_account_values().total_value, '-')
-# plt.xlabel("Feature")
+# plt.plot(all_accounts['j_ira'].date_range,
+#          all_accounts['j_ira'].calculate_account_values().total_value, '-')
+# plt.plot(all_accounts['t_ira'].date_range,
+#          all_accounts['t_ira'].calculate_account_values().total_value, '-')
+# plt.plot(all_accounts['brokerage'].date_range,
+#          all_accounts['brokerage'].calculate_account_values().total_value, '-')
+# plt.plot(all_accounts['trey_529'].date_range,
+#          all_accounts['trey_529'].calculate_account_values().total_value, '-')
+# plt.plot(all_accounts['louisa_529'].date_range,
+#          all_accounts['louisa_529'].calculate_account_values().total_value, '-')
+# plt.plot(all_accounts['george_529'].date_range,
+#          all_accounts['george_529'].calculate_account_values().total_value, '-')
+# plt.plot(all_accounts['tsp_mil'].date_range,
+#          all_accounts['tsp_mil'].calculate_account_values().total_value, '-')
+# # plt.plot(thrivent.date_range,
+# #          thrivent.calculate_account_values().total_value, '-')
+# # plt.plot(brokerage.date_range,
+# #          brokerage.calculate_account_values().total_value, '-')
+# # plt.plot(metron_401k.date_range,
+# #          metron_401k.calculate_account_values().total_value, '-')
+# # plt.xlabel("Feature")
 
 
-# plt.plot(index, 'total_value', data=j_ira_values, marker='o', markerfacecolor='blue',
-#          markersize=12, color='skyblue', linewidth=4)
-# plt('index', 'total_value', data=all_accounts['j_ira'], marker='o', markerfacecolor='blue',
-#     markersize=12, color='skyblue', linewidth=4)
-# plt.plot(j_ira_values.index, j_ira_values['total_value'], marker='', markerfacecolor='blue',
-#          markersize=12, color='skyblue', linewidth=4)
+# plt.ylabel("US Dollars")
+# plt.savefig('output/values.png')
 # plt.show()
 
-plt.ylabel("US Dollars")
-plt.savefig('output/values.png')
-plt.show()
+
+# Plotly plots #################################################################
+# fig = go.Figure()
+# fig.add_trace(go.Scatter(x=all_accounts['j_ira'].date_range,
+#                          y=all_accounts['j_ira'].calculate_account_values().total_value,
+#                          mode = 'lines',
+#                          name='j_ira'))
+# fig.add_trace(go.Scatter(x=all_accounts['t_ira'].date_range,
+#                          y=all_accounts['t_ira'].calculate_account_values().total_value,
+#                          mode = 'lines',
+#                          name='t_ira'))
+# fig.add_trace(go.Scatter(x=all_accounts['brokerage'].date_range,
+#                          y=all_accounts['brokerage'].calculate_account_values().total_value,
+#                          mode = 'lines',
+#                          name='brokerage'))
+# fig.show()
+
+fig = go.Figure()
+
+for key in all_accounts.keys():
+    fig.add_trace(go.Scatter(x=all_accounts[key].date_range,
+                            y=all_accounts[key].calculate_account_values().total_value,
+                            mode = 'lines',
+                            name=key))
+
+fig.update_layout(title='Account Balances',
+                   xaxis_title='Month',
+                   yaxis_title='USD',
+                   plot_bgcolor='white')
+
+fig.show()
+
