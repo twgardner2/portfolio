@@ -25,23 +25,25 @@ def date_range_generator(start, end):
     '''Create a series of the 1st of each month between the start and end 
     dates'''
 
+    # If starts on 1st, use start date
     if start.day == 1:
         first_date = start
+    # Else, use 1st of next month
     else:
-        year = start.year
-        month = start.month
-        day = 1
-        if month == 12:
-            month = 1
-            year = year + 1
-        else:
-            month = month + 1
-        first_date = datetime.datetime(year=year, month=month+1, day=1)
+        tmp = datetime.datetime(year=start.year, month=start.month, day=1)
+        first_date = tmp + relativedelta(months=1)
+
+    # If ends on 1st, use end date
+    if end.day == 1:
+        last_date = end
+    # Else, use 1st of its month
+    else:
+        last_date = datetime.datetime(year=end.year, month=end.month, day=1)
 
     date = first_date
     date_range = [first_date]
 
-    while date < end:
+    while date < last_date:
         date = date + relativedelta(months=1)
         date_range.append(date)
 
