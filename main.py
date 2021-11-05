@@ -25,7 +25,16 @@ accounts = transactions["account"].unique()
 
 
 # Create accounts ##############################################################
-# Create dict of dfs of account values ####
+
+## Blacklist accounts for troubleshooting ###
+account_blacklist = ['brokerage', 't_ira']
+accounts = np.setdiff1d(accounts, account_blacklist)
+
+print(f'accounts: {transactions["account"].unique()}')
+print(f'account_blacklist: {account_blacklist}')
+print(f'accounts_final: {accounts}')
+
+## Create dict of dfs of account values ####
 all_accounts = {}
 
 for account in accounts:
