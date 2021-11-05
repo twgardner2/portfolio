@@ -37,17 +37,6 @@ for account in accounts:
 # brokerage = Account('brokerage', date_range, transactions, prices)
 # thrivent = Account('thrivent', date_range, transactions, prices)
 
-
-# # Output parts of Accounts to files for troubleshooting
-# all_accounts['tsp_mil'].construct_shares_df().to_csv('output/tsp_mil_shares.csv')
-# # pprint(all_accounts)
-# all_accounts['brokerage'].calculate_account_values().to_csv('output/brokerage_values.csv')
-# all_accounts['brokerage'].construct_shares_df().to_csv('output/brokerage_shares.csv')
-# thrivent.construct_shares_df().to_csv('output/thrivent_shares.csv')
-# thrivent.calculate_account_values().to_csv('output/thrivent_values.csv')
-# metron_401k.construct_shares_df().to_csv('output/metron_401k_shares.csv')
-# metron_401k.calculate_account_values().to_csv('output/metron_401k_values.csv')
-
 # Plot account values ##########################################################
 
 plt.plot(all_accounts['j_ira'].date_range,
@@ -72,11 +61,6 @@ plt.plot(all_accounts['tsp_mil'].date_range,
 #          metron_401k.calculate_account_values().total_value, '-')
 # plt.xlabel("Feature")
 
-fig = plt.figure()
-ax = plt.axes()
-
-# x = np.linspace(0, 10, 1000)
-# ax.plot(x, np.sin(x)).show()
 
 # plt.plot(index, 'total_value', data=j_ira_values, marker='o', markerfacecolor='blue',
 #          markersize=12, color='skyblue', linewidth=4)
