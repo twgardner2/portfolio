@@ -30,10 +30,14 @@ accounts = transactions["account"].unique()
 
 ## Blacklist accounts for troubleshooting ###
 account_blacklist = ['brokerage', 't_ira']
+if 'account_blacklist' in locals():
 accounts = np.setdiff1d(accounts, account_blacklist)
 
 print(f'accounts: {transactions["account"].unique()}')
+if 'account_blacklist' in locals():
 print(f'account_blacklist: {account_blacklist}')
+else:
+    print('No account blacklist')
 print(f'accounts_final: {accounts}')
 
 ## Create dict of dfs of account values ####
