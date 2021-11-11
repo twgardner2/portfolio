@@ -4,13 +4,14 @@ import lib.util.util as util
 from pprint import pprint
 from lib.classes.Account import Account
 import matplotlib.pyplot as plt
+import pandas as pd
 import numpy as np
 
 import timeit
 
 import plotly.graph_objects as go
 
-# Environment Variables ########################################################
+# Helper Variables and Functions ########################################################
 # Determine date bounds
 start_date = datetime.date(2010, 5, 1)
 today = datetime.date.today()
@@ -19,41 +20,138 @@ end_date = datetime.date(today.year, 10, 1)
 
 date_range = util.date_range_generator(start_date, end_date)
 
+accounts_config = {
+    't_ira': {
+        'label':'T IRA',
+        'category': 'retirement'
+        },
+    'j_ira': {
+        'label': 'J IRA',
+        'category': 'retirement'
+        },
+    'brokerage': {
+        'label': 'Brokerage',
+        'category': 'retirement',
+        },
+    'trey_529': {
+        'label': '529 - Trey',
+        'category': 'college',
+        },
+    'louisa_529': {
+        'label': '529 - Louisa',
+        'category': 'college',
+        },
+    'george_529': {
+        'label': '529 - GGG',
+        'category': 'college',
+        },
+    'metron_401k': {
+        'label': 'Metron 401K',
+        'category': 'retirement',
+        },
+    'thrivent': {
+        'label': 'Thrivent',
+        'category': 'retirement',
+        },
+    'tsp_civ': {
+        'label': 'TSP - Civilian',
+        'category': 'retirement',
+        },
+    'tsp_mil': {
+        'label': 'TSP - Military',
+        'category': 'retirement',
+        },
+}
+
 # Read data ####################################################################
 transactions = util.read_timeseries_csv('./data/transactions.csv')
 prices = util.read_timeseries_csv('./data/prices.csv')
 positions = transactions["symbol"].unique()
 accounts = transactions["account"].unique()
+categories = set([x[1]['category'] for x in accounts_config.items()])
 
 
 # Create accounts ##############################################################
 
 ## Blacklist accounts for troubleshooting ###
-account_blacklist = ['brokerage', 't_ira']
+# account_blacklist = ['brokerage', 't_ira', 'j_ira', 'trey_529', 'louisa_529']
+account_blacklist = ['brokerage', 't_ira', 'j_ira']
 if 'account_blacklist' in locals():
-accounts = np.setdiff1d(accounts, account_blacklist)
+    accounts = np.setdiff1d(accounts, account_blacklist)
 
 print(f'accounts: {transactions["account"].unique()}')
 if 'account_blacklist' in locals():
-print(f'account_blacklist: {account_blacklist}')
+    print(f'account_blacklist: {account_blacklist}')
 else:
     print('No account blacklist')
 print(f'accounts_final: {accounts}')
 
-## Create dict of dfs of account values ####
+## Create dict of dfs of Account objects####
 all_accounts = {}
 
-for account in accounts:
-    all_accounts[account] = Account(account, date_range, transactions, prices)
 
-# # Create accounts individually for troubleshooting
-# t_ira = Account('t_ira', date_range, transactions, prices)
-# j_ira = Account('j_ira', date_range, transactions, prices)
-# brokerage = Account('brokerage', date_range, transactions, prices)
-# thrivent = Account('thrivent', date_range, transactions, prices)
+for account in accounts:
+    category = accounts_config.get(account).get('category')
+    all_accounts[account] = Account(account, transactions, prices, category)
+
+total_value_df = pd.DataFrame(index=date_range)
+for category in categories:
+    tmp_df = pd.DataFrame(index=date_range)
+    print([x[0] for x in all_accounts.items() if x[1].category==category])
+    for account in [x[0] for x in all_accounts.items() if x[1].category==category]:
+        tmp_df = tmp_df.join(all_accounts[account].calculate_account_values().iloc[:,-1])
+        total_value_df[f'{category}'] = tmp_df.sum(axis=1)
+
+print(total_value_df)
 
 # Plot account values ##########################################################
 
+## Plotly plots ################################################################
+
+### Accounts ###################################################################
+fig = go.Figure()
+
+for acct in all_accounts.keys():
+    fig.add_trace(go.Scatter(x=all_accounts[acct].date_range,
+                        y=all_accounts[acct].calculate_account_values().iloc[:,-1],
+                        mode = 'lines',
+                        name=accounts_config.get(acct).get('label')))
+
+fig.update_layout(title='Account Balances',
+                   xaxis_title='Month',
+                   yaxis_title='USD',
+                   plot_bgcolor='#f2e9e1',
+                   hovermode='x')
+
+fig.update_yaxes(tickprefix="$",
+                autorange=True)
+
+fig.show()
+# fig.write_image("output/account_totals.png")
+
+### Categories #################################################################
+fig = go.Figure()
+
+for category in categories:
+
+    fig.add_trace(go.Scatter(x=total_value_df.index,
+                        y=total_value_df[category],
+                        mode = 'lines',
+                        name=category))
+
+fig.update_layout(title='Savings Categories',
+                   xaxis_title='Month',
+                   yaxis_title='USD',
+                   plot_bgcolor='#f2e9e1',
+                   hovermode='x')
+
+fig.update_yaxes(tickprefix="$",
+                autorange=True)
+
+fig.show()
+# fig.write_image("output/account_totals.png")
+
+## Matplotlib Plots ############################################################
 # plt.plot(all_accounts['j_ira'].date_range,
 #          all_accounts['j_ira'].calculate_account_values().total_value, '-')
 # plt.plot(all_accounts['t_ira'].date_range,
@@ -80,36 +178,4 @@ for account in accounts:
 # plt.ylabel("US Dollars")
 # plt.savefig('output/values.png')
 # plt.show()
-
-
-# Plotly plots #################################################################
-# fig = go.Figure()
-# fig.add_trace(go.Scatter(x=all_accounts['j_ira'].date_range,
-#                          y=all_accounts['j_ira'].calculate_account_values().total_value,
-#                          mode = 'lines',
-#                          name='j_ira'))
-# fig.add_trace(go.Scatter(x=all_accounts['t_ira'].date_range,
-#                          y=all_accounts['t_ira'].calculate_account_values().total_value,
-#                          mode = 'lines',
-#                          name='t_ira'))
-# fig.add_trace(go.Scatter(x=all_accounts['brokerage'].date_range,
-#                          y=all_accounts['brokerage'].calculate_account_values().total_value,
-#                          mode = 'lines',
-#                          name='brokerage'))
-# fig.show()
-
-fig = go.Figure()
-
-for key in all_accounts.keys():
-    fig.add_trace(go.Scatter(x=all_accounts[key].date_range,
-                            y=all_accounts[key].calculate_account_values().total_value,
-                            mode = 'lines',
-                            name=key))
-
-fig.update_layout(title='Account Balances',
-                   xaxis_title='Month',
-                   yaxis_title='USD',
-                   plot_bgcolor='white')
-
-fig.show()
 
