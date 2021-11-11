@@ -4,8 +4,9 @@ import lib.util.util as util
 
 
 class Account:
-    def __init__(self, name, date_range, trans, prices):
+    def __init__(self, name, trans, prices, category):
         self.name = name
+        self.category = category
         self.trans = trans[trans['account']==name]
         self.symbols = self.trans['symbol'].unique()
         self.start_date = self.trans.index.min()
@@ -105,7 +106,7 @@ class Account:
             df[f'{symbol}_value'] = df[f'{symbol}_shares'] * \
                 df[f'{symbol}_price']
 
-        df['total_value'] = df.filter(regex='_value$').sum(axis=1)
+        df[f'{self.name}_total_value'] = df.filter(regex='_value$').sum(axis=1)
         df = df.filter(regex='_value$')
 
         return(df)
