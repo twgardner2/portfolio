@@ -59,6 +59,7 @@ class Account:
             # Calculate shares on starting date
             df[symbol].iloc[0] = self.calculate_shares_on_date(df.iloc[0].name, symbol, self.trans)
 
+            # Get just the trans for the symbol we're working on 
             symbol_trans = self.trans[self.trans['symbol']==symbol]
 
             # Iterate over index of dataframe to populate
@@ -67,6 +68,7 @@ class Account:
                 if i==0:
                     continue
                 
+                # Get the trans for the month
                 period_trans = symbol_trans[
                                     (symbol_trans.index>df.index[i-1]) &
                                     (symbol_trans.index<=df.index[i])
@@ -75,6 +77,7 @@ class Account:
                 # Shares at beginning of period
                 shares  = df[symbol].iloc[i-1]
 
+                # Iterate over the month's trans and calculate new shares
                 for index, row in period_trans.iterrows():
                     if row['type'] in ['purchase', 'div_reinvest', 'stock_dividend', 'ltcp_reinvest']:
                         shares += abs(float(row['shares']))
