@@ -15,8 +15,7 @@ import plotly.graph_objects as go
 # Determine date bounds
 start_date = datetime.date(2010, 5, 1)
 today = datetime.date.today()
-# end_date = datetime.date(today.year, today.month + 1, 1)
-end_date = datetime.date(today.year, 10, 1)
+end_date = util.previous_first_of_month()
 
 date_range = util.date_range_generator(start_date, end_date)
 
@@ -42,7 +41,7 @@ accounts_config = {
         'category': 'college',
         },
     'george_529': {
-        'label': '529 - GGG',
+        'label': '529 - George',
         'category': 'college',
         },
     'metron_401k': {
@@ -86,13 +85,12 @@ else:
     print('No account blacklist')
 print(f'accounts_final: {accounts}')
 
-## Create dict of dfs of Account objects####
+## Create Accounts
 all_accounts = {}
-
 
 for account in accounts:
     category = accounts_config.get(account).get('category')
-    all_accounts[account] = Account(account, transactions, prices, category)
+    all_accounts[account] = Account(account, transactions, prices, date_range, category)
 
 total_value_df = pd.DataFrame(index=date_range)
 for category in categories:
@@ -109,6 +107,8 @@ print(total_value_df)
 ## Plotly plots ################################################################
 
 ### Accounts ###################################################################
+all_accounts['george_529'].calculate_account_values().to_csv('./output/george_529.csv')
+
 fig = go.Figure()
 
 for acct in all_accounts.keys():
@@ -127,7 +127,9 @@ fig.update_yaxes(tickprefix="$",
                 autorange=True)
 
 fig.show()
-# fig.write_image("output/account_totals.png")
+fig.write_image("output/account_totals.png")
+
+
 
 ### Categories #################################################################
 fig = go.Figure()
@@ -149,7 +151,7 @@ fig.update_yaxes(tickprefix="$",
                 autorange=True)
 
 fig.show()
-# fig.write_image("output/account_totals.png")
+fig.write_image("output/category_totals.png")
 
 ## Matplotlib Plots ############################################################
 # plt.plot(all_accounts['j_ira'].date_range,
