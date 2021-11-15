@@ -20,6 +20,18 @@ end_date = util.previous_first_of_month()
 date_range = util.date_range_generator(start_date, end_date)
 
 accounts_config = {
+    'usaa_savings': {
+        'label':'USAA Savings',
+        'category': 'bank'
+    },
+    'usaa_checking': {
+        'label':'USAA Checking',
+        'category': 'bank'
+    },
+    'wells_fargo_checking': {
+        'label':'Wells Fargo Checking',
+        'category': 'bank'
+    },
     't_ira': {
         'label':'T IRA',
         'category': 'retirement'
