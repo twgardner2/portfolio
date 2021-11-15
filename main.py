@@ -74,6 +74,23 @@ accounts_config = {
         },
 }
 
+annotations = [
+    {'date': datetime.date(2013, 5, 31),
+     'text': 'Last Day in Navy'},
+    {'date': datetime.date(2013, 7, 31),
+     'text': 'Bought Sienna'},
+    {'date': datetime.date(2018, 6, 30),
+     'text': 'Bought Prius'},
+    {'date': datetime.date(2019, 10, 16),
+     'text': 'Bought 4903 Chipper Lane'},
+    {'date': datetime.date(2020, 5, 1),
+     'text': 'Started at Metron'},
+    {'date': datetime.date(2015, 6, 2),
+     'text': 'Started at Summit'},
+    {'date': datetime.date(2021, 4, 2),
+     'text': 'Sold 5236 Elston Lane'},
+]
+
 # Read data ####################################################################
 transactions = util.read_timeseries_csv('./data/transactions.csv')
 prices = util.read_timeseries_csv('./data/prices.csv')
@@ -152,6 +169,18 @@ for category in categories:
                         y=total_value_df[category],
                         mode = 'lines',
                         name=category))
+
+
+for annotation in annotations:
+    fig.add_annotation(
+        xref='x',
+        x=annotation['date'],
+        yref='y domain',
+        y=0.95,
+        text=annotation['text'],
+        showarrow=False,
+        textangle=-45,
+    )
 
 fig.update_layout(title='Savings Categories',
                    xaxis_title='Month',
