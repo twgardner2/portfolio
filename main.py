@@ -222,3 +222,6 @@ fig.write_image("output/category_totals.png")
 # plt.savefig('output/values.png')
 # plt.show()
 
+# Output CSVs ##################################################################
+for account in accounts:
+    all_accounts[account].calculate_account_values().to_csv(f'./output/{account}_529_values.csv')
