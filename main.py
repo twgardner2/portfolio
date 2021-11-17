@@ -75,20 +75,53 @@ accounts_config = {
 }
 
 annotations = [
-    {'date': datetime.date(2013, 5, 31),
-     'text': 'Last Day in Navy'},
-    {'date': datetime.date(2013, 7, 31),
-     'text': 'Bought Sienna'},
-    {'date': datetime.date(2018, 6, 30),
-     'text': 'Bought Prius'},
-    {'date': datetime.date(2019, 10, 16),
-     'text': 'Bought 4903 Chipper Lane'},
-    {'date': datetime.date(2020, 5, 1),
-     'text': 'Started at Metron'},
-    {'date': datetime.date(2015, 6, 2),
-     'text': 'Started at Summit'},
-    {'date': datetime.date(2021, 4, 2),
-     'text': 'Sold 5236 Elston Lane'},
+    {'date': pd.to_datetime('20130531'),
+     'text': 'Last Day in Navy',
+    },
+    {'date': pd.to_datetime('20130731'),
+     'text': 'Bought Sienna'
+    },
+    {'date': pd.to_datetime('20180630'),
+     'text': 'Bought Prius'
+    },
+    {'date': pd.to_datetime('20191016'),
+     'text': 'Bought 4903 Chipper Lane'
+    },
+    {'date': pd.to_datetime('20200501'),
+     'text': 'Started at Metron'
+    },
+    {'date': pd.to_datetime('20150602'),
+     'text': 'Started at Summit'
+    },
+    {'date': pd.to_datetime('20210402'),
+     'text': 'Sold 5236 Elston Lane'
+    },
+]
+
+category_annotations = [
+    {'date': pd.to_datetime('20130531'),
+     'text': 'Last Day in Navy',
+     'point_to': 'bank' 
+    },
+    {'date': pd.to_datetime('20130731'),
+     'text': 'Bought Sienna',
+     'point_to': 'retirement'
+    },
+    {'date': pd.to_datetime('20180630'),
+     'text': 'Bought Prius'
+    },
+    {'date': pd.to_datetime('20191016'),
+     'text': 'Bought 4903 Chipper Lane'
+    },
+    {'date': pd.to_datetime('20200501'),
+     'text': 'Started at Metron'
+    },
+    {'date': pd.to_datetime('20150602'),
+     'text': 'Started at Summit'
+    },
+    {'date': pd.to_datetime('20210402'),
+     'text': 'Sold 5236 Elston Lane'
+    },
 ]
 
 # Read data ####################################################################
@@ -102,16 +135,17 @@ categories = set([x[1]['category'] for x in accounts_config.items()])
 # Create accounts ##############################################################
 
 ## Blacklist accounts for troubleshooting ###
-# account_blacklist = ['brokerage', 't_ira', 'j_ira', 'trey_529', 'louisa_529']
-account_blacklist = ['brokerage', 't_ira', 'j_ira']
+account_blacklist = ['brokerage', 't_ira', 'j_ira', 'trey_529', 'louisa_529']
+# account_blacklist = ['brokerage', 'j_ira']
 if 'account_blacklist' in locals():
     accounts = np.setdiff1d(accounts, account_blacklist)
 
 print(f'accounts: {transactions["account"].unique()}')
-if 'account_blacklist' in locals():
-    print(f'account_blacklist: {account_blacklist}')
-else:
-    print('No account blacklist')
+# if 'account_blacklist' in locals():
+#     print(f'account_blacklist: {account_blacklist}')
+# else:
+#     print('No account blacklist')
+    
 print(f'accounts_final: {accounts}')
 
 ## Create Accounts
@@ -130,6 +164,12 @@ for category in categories:
         total_value_df[f'{category}'] = tmp_df.sum(axis=1)
 
 print(total_value_df)
+print(total_value_df.index.get_loc(pd.to_datetime(datetime.date(2016,6,13)), method='backfill'))
+print('===================')
+print(total_value_df.iloc[total_value_df.index.get_loc(pd.to_datetime(datetime.date(2016,6,23)), method='nearest')]['bank'])
+# print(total_value_df.iloc[datetime.date(2016,6,23)])
+
+# print(total_value_df)
 
 # Plot account values ##########################################################
 
@@ -156,7 +196,7 @@ fig.update_yaxes(tickprefix="$",
                 autorange=True)
 
 fig.show()
-fig.write_image("output/account_totals.png")
+# fig.write_image("output/account_totals.png")
 
 
 
@@ -171,17 +211,45 @@ for category in categories:
                         name=category))
 
 
-for annotation in annotations:
+
+for annotation in category_annotations:
+    if 'point_to' in annotation:
+        max_value_plotted = total_value_df.to_numpy().max()
+        account = annotation['point_to']
+
+        fig.add_annotation(
+            xref='x',
+            x = annotation['date'],
+            yref = 'y',
+            y = total_value_df.iloc[total_value_df.index.get_loc(annotation['date'], method='backfill')][account],
+
+            axref='x',
+            ax = annotation['date'],
+            ayref='y',
+            ay = 1.1*max_value_plotted,
+
+            text=annotation['text'],
+            showarrow=True,
+            textangle=-45,
+            arrowhead=2,
+        )
+    else:
     fig.add_annotation(
         xref='x',
-        x=annotation['date'],
-        yref='y domain',
-        y=0.95,
+            x = annotation['date'],
+            yref = 'y domain',
+            y = 0.95,
+
+            # axref='x',
+            # ax = annotation['date'],
+            # ayref='y',
+            # ay = 1.1*max_value_plotted,
+
         text=annotation['text'],
         showarrow=False,
         textangle=-45,
+            arrowhead=2,
     )
-
 fig.update_layout(title='Savings Categories',
                    xaxis_title='Month',
                    yaxis_title='USD',
@@ -223,5 +291,5 @@ fig.write_image("output/category_totals.png")
 # plt.show()
 
 # Output CSVs ##################################################################
-for account in accounts:
-    all_accounts[account].calculate_account_values().to_csv(f'./output/{account}_529_values.csv')
+# for account in accounts:
+#     all_accounts[account].calculate_account_values().to_csv(f'./output/{account}_529_values.csv')
