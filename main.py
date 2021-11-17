@@ -6,7 +6,10 @@ from lib.classes.Account import Account
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-
+import multiprocessing as mp
+from multiprocessing.managers import SharedMemoryManager
+from multiprocessing.sharedctypes import Array
+import ctypes
 import timeit
 
 import plotly.graph_objects as go
@@ -35,43 +38,43 @@ accounts_config = {
     't_ira': {
         'label':'T IRA',
         'category': 'retirement'
-        },
+    },
     'j_ira': {
         'label': 'J IRA',
         'category': 'retirement'
-        },
+    },
     'brokerage': {
         'label': 'Brokerage',
         'category': 'retirement',
-        },
+    },
     'trey_529': {
         'label': '529 - Trey',
         'category': 'college',
-        },
+    },
     'louisa_529': {
         'label': '529 - Louisa',
         'category': 'college',
-        },
+    },
     'george_529': {
         'label': '529 - George',
         'category': 'college',
-        },
+    },
     'metron_401k': {
         'label': 'Metron 401K',
         'category': 'retirement',
-        },
+    },
     'thrivent': {
         'label': 'Thrivent',
         'category': 'retirement',
-        },
+    },
     'tsp_civ': {
         'label': 'TSP - Civilian',
         'category': 'retirement',
-        },
+    },
     'tsp_mil': {
         'label': 'TSP - Military',
         'category': 'retirement',
-        },
+    },
 }
 
 annotations = [
@@ -148,6 +151,35 @@ print(f'accounts: {transactions["account"].unique()}')
     
 print(f'accounts_final: {accounts}')
 
+
+## Create Accounts across Pool
+# def create_account(account, transactions, prices, date_range, category, config):
+#     category = config.get(account).get('category')
+#     return({account: Account(account, transactions, prices, date_range, category)})
+# with SharedMemoryManager() as smm:
+#     sh_transactions = mp.Value(ctypes.py_object)
+#     sh_prices = mp.Value(ctypes.py_object)
+#     # sh_date_range = mp.Array(date_range)
+#     # sh_date_range = multiprocessing.sharedctypes.Array(date_range)
+#     sh_date_range = mp.Value(date_range)
+
+#     def create_account(account):
+#         # sh_transactions, sh_prices, sh_date_range, sh_config
+#         # category = sh_config.get(account).get('category')
+#         category='bank'
+#         return({account: Account(account, sh_transactions, sh_prices, sh_date_range, category)})
+
+#     with mp.Pool() as p:
+#         p.map(Account, accounts)
+
+
+
+# test_all_accounts = Pool.starmap(create_account, zip(accounts, ))
+# print('asdfasdf')
+# print(list(zip(accounts, [transactions]*len(accounts))))
+# print('asdfasdf')
+
+
 ## Create Accounts
 all_accounts = {}
 
@@ -158,7 +190,6 @@ for account in accounts:
 total_value_df = pd.DataFrame(index=date_range)
 for category in categories:
     tmp_df = pd.DataFrame(index=date_range)
-    print([x[0] for x in all_accounts.items() if x[1].category==category])
     for account in [x[0] for x in all_accounts.items() if x[1].category==category]:
         tmp_df = tmp_df.join(all_accounts[account].calculate_account_values().iloc[:,-1])
         total_value_df[f'{category}'] = tmp_df.sum(axis=1)
@@ -176,7 +207,6 @@ print(total_value_df.iloc[total_value_df.index.get_loc(pd.to_datetime(datetime.d
 ## Plotly plots ################################################################
 
 ### Accounts ###################################################################
-all_accounts['george_529'].calculate_account_values().to_csv('./output/george_529.csv')
 
 fig = go.Figure()
 
@@ -234,8 +264,8 @@ for annotation in category_annotations:
             arrowhead=2,
         )
     else:
-    fig.add_annotation(
-        xref='x',
+        fig.add_annotation(
+            xref='x',
             x = annotation['date'],
             yref = 'y domain',
             y = 0.95,
@@ -245,11 +275,11 @@ for annotation in category_annotations:
             # ayref='y',
             # ay = 1.1*max_value_plotted,
 
-        text=annotation['text'],
-        showarrow=False,
-        textangle=-45,
+            text=annotation['text'],
+            showarrow=False,
+            textangle=-45,
             arrowhead=2,
-    )
+        )
 fig.update_layout(title='Savings Categories',
                    xaxis_title='Month',
                    yaxis_title='USD',
