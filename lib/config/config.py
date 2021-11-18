@@ -16,7 +16,15 @@ accounts_config = {
         'label':'Wells Fargo Checking',
         'category': 'bank'
     },
+    'empower_401k': {
+        'class': 'Bank_Account',
+        'label':'Summit 401K',
+        'category': 'bank',
+        'note': '''This is an investment account but I can\'t get the 
+                   transaction details, so I treat it like a bank account''',
+    },
     't_ira': {
+        'class': 'Inv_Account',
         'label':'T IRA',
         'category': 'retirement'
     },
@@ -55,6 +63,14 @@ accounts_config = {
     'tsp_mil': {
         'label': 'TSP - Military',
         'category': 'retirement',
+    },
+    'elston_lane': {
+        'label': '5236 Elston Lane',
+        'category': 'home_equity',
+    },
+    'chipper_lane': {
+        'label': '4903 Chipper Lane',
+        'category': 'home_equity',
     },
 }
 
