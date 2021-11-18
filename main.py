@@ -3,7 +3,8 @@ import datetime
 # from lib.api.construct_price_history import construct_price_history
 import lib.util.util as util
 from pprint import pprint
-from lib.classes.Account import Account
+from lib.classes.Inv_Account import Inv_Account
+from lib.classes.Bank_Account import Bank_Account
 import pandas as pd
 import numpy as np
 
@@ -48,7 +49,7 @@ all_accounts = {}
 
 for account in accounts:
     category = accounts_config.get(account).get('category')
-    all_accounts[account] = Account(account, transactions, prices, date_range, category)
+    all_accounts[account] = Inv_Account(account, transactions, prices, date_range, category)
 
 total_value_df = pd.DataFrame(index=date_range)
 for category in categories:

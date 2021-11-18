@@ -1,10 +1,9 @@
-from dateutil.relativedelta import relativedelta
 import pandas as pd
 import lib.util.util as util
 
 
 
-class Account:
+class Inv_Account:
     def __init__(self, name, trans, prices, date_range, category):
         self.name = name
         self.category = category
