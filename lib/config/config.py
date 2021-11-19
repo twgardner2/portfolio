@@ -29,46 +29,57 @@ accounts_config = {
         'category': 'retirement'
     },
     'j_ira': {
+        'class': 'Inv_Account',
         'label': 'J IRA',
         'category': 'retirement'
     },
     'brokerage': {
+        'class': 'Inv_Account',
         'label': 'Brokerage',
         'category': 'retirement',
     },
     'trey_529': {
+        'class': 'Inv_Account',
         'label': '529 - Trey',
         'category': 'college',
     },
     'louisa_529': {
+        'class': 'Inv_Account',
         'label': '529 - Louisa',
         'category': 'college',
     },
     'george_529': {
+        'class': 'Inv_Account',
         'label': '529 - George',
         'category': 'college',
     },
     'metron_401k': {
+        'class': 'Inv_Account',
         'label': 'Metron 401K',
         'category': 'retirement',
     },
     'thrivent': {
+        'class': 'Inv_Account',
         'label': 'Thrivent',
         'category': 'retirement',
     },
     'tsp_civ': {
+        'class': 'Inv_Account',
         'label': 'TSP - Civilian',
         'category': 'retirement',
     },
     'tsp_mil': {
+        'class': 'Inv_Account',
         'label': 'TSP - Military',
         'category': 'retirement',
     },
     'elston_lane': {
+        'class': 'Home_Equity',
         'label': '5236 Elston Lane',
         'category': 'home_equity',
     },
     'chipper_lane': {
+        'class': 'Home_Equity',
         'label': '4903 Chipper Lane',
         'category': 'home_equity',
     },
