@@ -15,7 +15,14 @@ class Bank_Account:
     def calculate_account_values(self):
 
         # Create dataframe to populate
-        df = pd.DataFrame(index=self.date_range, columns=[self.name])
+        df = pd.DataFrame(index=self.date_range)
+
+        df = df.merge(self.balances,
+                        left_index = True,
+                        right_index = True,
+                        how = 'left')
+        df = df.drop('account', axis=1)
+        df = df.rename({'balance': f'{self.name}_total_value'}, axis=1)
 
 
-        return(self.balances)
+        return(df)
