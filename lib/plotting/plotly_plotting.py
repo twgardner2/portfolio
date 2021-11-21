@@ -5,7 +5,6 @@ import plotly.graph_objects as go
 # Plotly plots ################################################################
 def make_plotly_plots(all_accounts, total_value_df):
     ## Accounts ###################################################################
-    all_accounts['george_529'].calculate_account_values().to_csv('./output/george_529.csv')
 
     fig = go.Figure()
 

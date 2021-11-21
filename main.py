@@ -46,25 +46,14 @@ account missing in the config'''
 
 ### Warn if any account name is in raw data but not the config
 accounts_in_config = np.array(list(accounts_config.keys()))
-# print('accounts_in_config') 
-# print(len(accounts_in_config)) 
-# print(accounts_in_config) 
 accounts_in_raw_data = np.concatenate((inv_accounts, bank_accounts, homes))
-# print('accounts_in_raw_data') 
-# print(len(accounts_in_raw_data)) 
-# print(accounts_in_raw_data) 
 accounts_in_raw_data_but_not_config = \
     np.setdiff1d(accounts_in_raw_data, accounts_in_config)
-# print('accounts_in_raw_data_but_not_config')
-# print(len(accounts_in_raw_data_but_not_config))
-# print(accounts_in_raw_data_but_not_config)
 if len(accounts_in_raw_data_but_not_config):
     warnings.warn(
         f'''WARNING: The following accounts are in the raw data but are not in 
         accounts_config and will be ignored: 
         {accounts_in_raw_data_but_not_config}''')
-
-
 
 ## Blacklist accounts for troubleshooting ###
 account_blacklist = ['brokerage', 't_ira', 'j_ira', 'trey_529', 'louisa_529']
@@ -105,12 +94,6 @@ for category in categories:
         total_value_df[f'{category}'] = tmp_df.sum(axis=1)
 
 print(total_value_df)
-print(total_value_df.index.get_loc(pd.to_datetime(datetime.date(2016,6,13)), method='backfill'))
-print('===================')
-print(total_value_df.iloc[total_value_df.index.get_loc(pd.to_datetime(datetime.date(2016,6,23)), method='nearest')]['bank'])
-# print(total_value_df.iloc[datetime.date(2016,6,23)])
-
-# print(total_value_df)
 
 # Create Plots #################################################################
 
