@@ -39,6 +39,10 @@ def make_plotly_plots(all_accounts, total_value_df):
                             mode = 'lines',
                             name=category))
 
+    fig.add_trace(go.Scatter(x=total_value_df.index,
+                        y=total_value_df.sum(axis=1),
+                        mode = 'lines',
+                        name='Total'))
 
 
     for annotation in category_annotations:
