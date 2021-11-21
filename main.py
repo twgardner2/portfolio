@@ -105,4 +105,4 @@ make_plotly_plots(all_accounts, total_value_df)
 
 # Output CSVs ##################################################################
 # for account in accounts:
-#     all_accounts[account].calculate_account_values().to_csv(f'./output/{account}_529_values.csv')
+#     all_accounts[account].calculate_account_values().to_csv(f'./output/csvs/{account}_529_values.csv')
