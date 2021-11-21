@@ -125,7 +125,7 @@ category_annotations = [
     {
         'date': pd.to_datetime('20130731'),
         'text': 'Bought Sienna',
-        'point_to': 'retirement'
+        'point_to': 'bank'
     },
     {
         'date': pd.to_datetime('20180630'),
