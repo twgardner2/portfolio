@@ -74,9 +74,11 @@ def backup_data_file(fn):
 
 def previous_first_of_month(date = datetime.date.today()):
     if date.day == 1:
-        return_date = date
+        return_date = date + relativedelta(months=-1)
     else:
         return_date = datetime.date(year=date.year, month=date.month, day=1)
+
+    return_date = pd.to_datetime(return_date)
     return(return_date)
 
 def next_first_of_month(date = datetime.date.today()):

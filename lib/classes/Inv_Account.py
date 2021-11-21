@@ -4,13 +4,12 @@ import lib.util.util as util
 
 
 class Inv_Account:
-    def __init__(self, name, trans, prices, date_range, category):
+    def __init__(self, name, trans, prices, category):
         self.name = name
         self.category = category
         self.trans = trans[trans['account']==name]
         self.symbols = self.trans['symbol'].unique()
         self.start_date = util.previous_first_of_month(self.trans.index.min())
-        self.start_date = pd.to_datetime(self.start_date)
         self.end_date = pd.to_datetime('today')
         self.date_range = util.date_range_generator(self.start_date, self.end_date)
         self.prices = prices.loc[prices.index>=self.start_date, self.symbols]

@@ -71,6 +71,8 @@ account_blacklist = ['brokerage', 't_ira', 'j_ira', 'trey_529', 'louisa_529']
 # account_blacklist = ['brokerage', 'j_ira']
 if 'account_blacklist' in locals():
     accounts = np.setdiff1d(accounts_in_config, account_blacklist)
+else:
+    accounts = accounts_in_config
 
 if 'account_blacklist' in locals():
     print(f'account_blacklist: {account_blacklist}')
@@ -86,11 +88,12 @@ for account in accounts:
     category = accounts_config.get(account).get('category')
     account_class =  accounts_config.get(account).get('class')
     if account_class == 'Inv_Account':
-    all_accounts[account] = Inv_Account(account, transactions, prices, date_range, category)
+        all_accounts[account] = Inv_Account(account, transactions, prices, category)
     elif account_class == 'Bank_Account':
-        all_accounts[account] = Bank_Account(account, bank_balances, date_range, category)
+        all_accounts[account] = Bank_Account(account, bank_balances, category)
     elif account_class == 'Home_Equity':
-        all_accounts[account] = Home_Equity(account, home_equity, date_range, category)
+        all_accounts[account] = Home_Equity(account, home_equity, category)
+
 
 
 total_value_df = pd.DataFrame(index=date_range)
