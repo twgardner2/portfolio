@@ -92,32 +92,44 @@ class Inv_Account:
         return(df)
 
     def construct_shares_df2(self):
+        '''Constructs df of shares for each symbol over date_range for 
+        account'''
+
         # Create dataframe to populate
         df = pd.DataFrame(0, index=self.date_range, columns=self.symbols)
 
+        # Iterate over symbols in account
         for symbol in self.symbols:
     
+            # Filter transactions on the symbol and the date range
             symbol_trans = self.trans[self.trans['symbol']==symbol]
             mask = symbol_trans.index <= self.date_range[-1]
             symbol_trans = symbol_trans.loc[mask]
+
+            # Loop over the symbol's transactions, removing transactions after 
+            # processing them 
             while not symbol_trans.empty:
 
+                # Get index (date) of first transaction for symbol
                 first_trans_index = symbol_trans.index[0]
 
+                # Get closest shares df index (date) after the transaction date
                 shares_i = df.index.get_loc(first_trans_index, method='backfill')
+                # Get number of shares at previous index (date)
                 shares_value = df.iloc[shares_i-1][symbol]
-
+                # Get indices (dates) in shares df on either side of the trans
                 shares_date_pre_trans = df.index[shares_i-1]
                 shares_date_post_trans = df.index[shares_i]
 
-                # Trans between dates
+                # Get all symbol transactions between these dates
                 trans_between_dates = symbol_trans.loc[shares_date_pre_trans:shares_date_post_trans]
 
-                # Remove trans_between_dates from symbol_trans
+                # Remove these transactions from symbol_trans
                 mask = np.invert(symbol_trans.index.isin(trans_between_dates.index))
                 symbol_trans = symbol_trans[mask]
 
-                # for i in trans_between_dates.index:
+                # Iterate over these transactions, calculating their effect on 
+                # the number of shares
                 for i in range(len(trans_between_dates)):
                     # Stock increases
                     if trans_between_dates.iloc[i]['type'].strip() in ['purchase', 'div_reinvest', 'stock_dividend', 'ltcp_reinvest']:
@@ -132,6 +144,7 @@ class Inv_Account:
                     elif trans_between_dates.iloc[i]['type'].strip() in ['split']:
                         shares_value = shares_value * float(trans_between_dates.iloc[i]['shares'])
 
+                # Set shares for all future indices (dates) to new shares value
                 mask = [i >= shares_i for i in range(df.index.shape[0])] 
                 df.loc[mask,symbol] = shares_value
 
