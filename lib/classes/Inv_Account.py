@@ -42,7 +42,7 @@ class Inv_Account:
             # Splits
             elif symbol_trans.iloc[i]['type'] in ['split']:
                 shares = shares * float(symbol_trans.iloc[i]['shares'])
-
+        
         return (shares)
     
 
@@ -100,7 +100,7 @@ class Inv_Account:
 
         # Iterate over symbols in account
         for symbol in self.symbols:
-    
+            
             # Filter transactions on the symbol and the date range
             symbol_trans = self.trans[self.trans['symbol']==symbol]
             mask = symbol_trans.index <= self.date_range[-1]
@@ -115,8 +115,10 @@ class Inv_Account:
 
                 # Get closest shares df index (date) after the transaction date
                 shares_i = df.index.get_loc(first_trans_index, method='backfill')
+                
                 # Get number of shares at previous index (date)
                 shares_value = df.iloc[shares_i-1][symbol]
+
                 # Get indices (dates) in shares df on either side of the trans
                 shares_date_pre_trans = df.index[shares_i-1]
                 shares_date_post_trans = df.index[shares_i]
@@ -127,7 +129,7 @@ class Inv_Account:
                 # Remove these transactions from symbol_trans
                 mask = np.invert(symbol_trans.index.isin(trans_between_dates.index))
                 symbol_trans = symbol_trans[mask]
-
+                
                 # Iterate over these transactions, calculating their effect on 
                 # the number of shares
                 for i in range(len(trans_between_dates)):
