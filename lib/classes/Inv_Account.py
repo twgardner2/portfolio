@@ -90,11 +90,58 @@ class Inv_Account:
 
         return(df)
 
+    def construct_shares_df2(self):
+        # Create dataframe to populate
+        df = pd.DataFrame(0, index=self.date_range, columns=self.symbols)
+
+        for symbol in self.symbols:
+    
+            symbol_trans = self.trans[self.trans['symbol']==symbol]
+            mask = symbol_trans.index <= self.date_range[-1]
+            symbol_trans = symbol_trans.loc[mask]
+            while not symbol_trans.empty:
+
+                first_trans_index = symbol_trans.index[0]
+
+                shares_i = df.index.get_loc(first_trans_index, method='backfill')
+                shares_value = df.iloc[shares_i-1][symbol]
+
+                shares_date_pre_trans = df.index[shares_i-1]
+                shares_date_post_trans = df.index[shares_i]
+
+                # Trans between dates
+                trans_between_dates = symbol_trans.loc[shares_date_pre_trans:shares_date_post_trans]
+
+                # Remove trans_between_dates from symbol_trans
+                mask = np.invert(symbol_trans.index.isin(trans_between_dates.index))
+                symbol_trans = symbol_trans[mask]
+
+                # for i in trans_between_dates.index:
+                for i in range(len(trans_between_dates)):
+                    # Stock increases
+                    if trans_between_dates.iloc[i]['type'].strip() in ['purchase', 'div_reinvest', 'stock_dividend', 'ltcp_reinvest']:
+                        shares_value = shares_value + float(trans_between_dates.iloc[i]['shares'])
+                    # Stock decreases
+                    elif trans_between_dates.iloc[i]['type'].strip() in ['sale', 'fee']:
+                        if trans_between_dates.iloc[i]['shares'].strip() == 'all':
+                            shares_value = 0
+                        else:
+                            shares_value = shares_value - abs(float(trans_between_dates.iloc[i]['shares']))
+                    # Splits
+                    elif trans_between_dates.iloc[i]['type'].strip() in ['split']:
+                        shares_value = shares_value * float(trans_between_dates.iloc[i]['shares'])
+
+                mask = [i >= shares_i for i in range(df.index.shape[0])] 
+                df.loc[mask,symbol] = shares_value
+
+        return(df)
+
+
     def calculate_account_values(self):
         ''' Calculates the value of shares and the entire account given a date
         indexed dataframe of shares and the date indexed dataframe of position
         prices '''
-        account_shares = self.construct_shares_df()
+        account_shares = self.construct_shares_df2()
         account_symbols = account_shares.columns
 
         account_prices = self.prices.loc[:, account_symbols]
