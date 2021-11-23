@@ -28,19 +28,19 @@ class Inv_Account:
         shares = 0
 
         # Iterate over filtered transactions
-        for index, row in symbol_trans.iterrows():
+        for i in range(len(symbol_trans)):
             # Stock increases
-            if row['type'].strip() in ['purchase', 'div_reinvest', 'stock_dividend', 'ltcp_reinvest']:
-                shares = shares + abs(float(row['shares']))
+            if symbol_trans.iloc[i]['type'].strip() in ['purchase', 'div_reinvest', 'stock_dividend', 'ltcp_reinvest']:
+                shares = shares + abs(float(symbol_trans.iloc[i]['shares']))
             # Stock decreases
-            elif row['type'].strip() in ['sale', 'fee']:
-                if row['shares'].strip() == 'all':
+            elif symbol_trans.iloc[i]['type'].strip() in ['sale', 'fee']:
+                if symbol_trans.iloc[i]['shares'].strip() == 'all':
                     shares = 0
                 else:
-                    shares = shares - abs(float(row['shares']))
+                    shares = shares - abs(float(symbol_trans.iloc[i]['shares']))
             # Splits
-            elif row['type'] in ['split']:
-                shares = shares * float(row['shares'])
+            elif symbol_trans.iloc[i]['type'] in ['split']:
+                shares = shares * float(symbol_trans.iloc[i]['shares'])
 
         return (shares)
     
