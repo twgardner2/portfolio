@@ -9,7 +9,7 @@ def make_plotly_plots(all_accounts, total_value_df):
     fig = go.Figure()
 
     for acct in all_accounts.keys():
-        fig.add_trace(go.Scatter(x=all_accounts[acct].date_range,
+        fig.add_trace(go.Scatter(x=all_accounts[acct].calculate_account_values().index,
                             y=all_accounts[acct].calculate_account_values().iloc[:,-1],
                             mode = 'lines',
                             name=accounts_config.get(acct).get('label')))
@@ -24,7 +24,7 @@ def make_plotly_plots(all_accounts, total_value_df):
                     autorange=True)
 
     fig.show()
-    # fig.write_image("output/account_totals.png")
+    fig.write_image("output/account_totals.png")
 
 
 
@@ -59,7 +59,7 @@ def make_plotly_plots(all_accounts, total_value_df):
                 axref='x',
                 ax = annotation['date'],
                 ayref='y',
-                ay = 1.1*max_value_plotted,
+                ay = 1.5*max_value_plotted,
 
                 text=annotation['text'],
                 showarrow=True,
