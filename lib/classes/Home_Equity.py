@@ -8,8 +8,18 @@ class Home_Equity:
         self.category = category
 
         self.home_equity = home_equity[home_equity['home']==name]
-        self.start_date = util.previous_first_of_month(self.home_equity.index.min())
+
+        self.sold = (self.home_equity['note'] == 'sold').any()
+
+        # if self.sold:
+        #     self.home_equity = self.home_equity[self.home_equity['note'] != 'sold']
+        #     self.end_date = self.home_equity[self.home_equity['note'] != 'sold'].index.max()
+        # else:
+        #     self.end_date = pd.to_datetime('today')
+        
         self.end_date = pd.to_datetime('today')
+
+        self.start_date = util.previous_first_of_month(self.home_equity.index.min())
         self.date_range = util.date_range_generator(self.start_date, self.end_date)
 
     def calculate_account_values(self):
