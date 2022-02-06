@@ -1,37 +1,42 @@
 import pandas as pd
 
 accounts_config = {
+    # 'dummy_account': {
+    #     'class': 'Bank_Account',
+    #     'label':'USAA Savings',
+    #     'category': 'bank',
+    # },
     'usaa_savings': {
         'class': 'Bank_Account',
         'label':'USAA Savings',
-        'category': 'bank'
+        'category': 'bank',
     },
     'usaa_checking': {
         'class': 'Bank_Account',
         'label':'USAA Checking',
-        'category': 'bank'
+        'category': 'bank',
     },
     'wells_fargo_checking': {
         'class': 'Bank_Account',
         'label':'Wells Fargo Checking',
-        'category': 'bank'
+        'category': 'bank',
     },
     'empower_401k': {
         'class': 'Bank_Account',
         'label':'Summit 401K',
-        'category': 'bank',
+        'category': 'retirement',
         'note': '''This is an investment account but I can\'t get the 
                    transaction details, so I treat it like a bank account''',
     },
     't_ira': {
         'class': 'Inv_Account',
         'label':'T IRA',
-        'category': 'retirement'
+        'category': 'retirement',
     },
     'j_ira': {
         'class': 'Inv_Account',
         'label': 'J IRA',
-        'category': 'retirement'
+        'category': 'retirement',
     },
     'brokerage': {
         'class': 'Inv_Account',
@@ -92,27 +97,27 @@ annotations = [
     },
     {
         'date': pd.to_datetime('20130731'),
-        'text': 'Bought Sienna'
+        'text': 'Bought Sienna',
     },
     {
         'date': pd.to_datetime('20180630'),
-        'text': 'Bought Prius'
+        'text': 'Bought Prius',
     },
     {
         'date': pd.to_datetime('20191016'),
-        'text': 'Bought 4903 Chipper Lane'
+        'text': 'Bought 4903 Chipper Lane',
     },
     {
         'date': pd.to_datetime('20200501'),
-        'text': 'Started at Metron'
+        'text': 'Started at Metron',
     },
     {
         'date': pd.to_datetime('20150602'),
-        'text': 'Started at Summit'
+        'text': 'Started at Summit',
     },
     {
         'date': pd.to_datetime('20210402'),
-        'text': 'Sold 5236 Elston Lane'
+        'text': 'Sold 5236 Elston Lane',
     },
 ]
 
@@ -125,26 +130,27 @@ category_annotations = [
     {
         'date': pd.to_datetime('20130731'),
         'text': 'Bought Sienna',
-        'point_to': 'bank'
+        'point_to': 'bank',
     },
     {
         'date': pd.to_datetime('20180630'),
-        'text': 'Bought Prius'
+        'text': 'Bought Prius',
     },
     {
-        'date': pd.to_datetime('20191016'),
-        'text': 'Bought 4903 Chipper Lane'
+        'date': pd.to_datetime('20191001'), # actual 20191016
+        'text': 'Bought 4903 Chipper Lane',
+        'point_to': 'bank',
     },
     {
         'date': pd.to_datetime('20200501'),
-        'text': 'Started at Metron'
+        'text': 'Started at Metron',
     },
     {
         'date': pd.to_datetime('20150602'),
-        'text': 'Started at Summit'
+        'text': 'Started at Summit',
     },
     {
         'date': pd.to_datetime('20210402'),
-        'text': 'Sold 5236 Elston Lane'
+        'text': 'Sold 5236 Elston Lane',
     },
 ]
