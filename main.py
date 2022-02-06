@@ -10,7 +10,9 @@ import pandas as pd
 import numpy as np
 import warnings
 
-import timeit
+import time
+
+t1 = time.time()  #-------------------------------
 
 
 # Helper Variables and Functions ########################################################
@@ -18,9 +20,7 @@ import timeit
 start_date = datetime.date(2010, 5, 1)
 today = datetime.date.today()
 end_date = util.previous_first_of_month()
-
 date_range = util.date_range_generator(start_date, end_date)
-
 
 # Read data ####################################################################
 transactions = util.read_timeseries_csv('./data/transactions.csv')
@@ -34,10 +34,7 @@ bank_accounts = bank_balances['account'].unique()
 homes = home_equity['home'].unique()
 categories = set([x[1]['category'] for x in accounts_config.items()])
 
-# Create Bank Accounts #########################################################
-
-# wells_fargo = Bank_Account('wells_fargo_checking', bank_balances, date_range, accounts_config.get('wells_fargo_checking').get('category'))
-# print(wells_fargo.calculate_account_values())
+t2 = time.time()  #-------------------------------
 
 # Create accounts ##############################################################
 '''Going to make accounts from the accounts_config object, but will check 
@@ -56,7 +53,7 @@ if len(accounts_in_raw_data_but_not_config):
         {accounts_in_raw_data_but_not_config}''')
 
 ## Blacklist accounts for troubleshooting ###
-account_blacklist = ['brokerage', 't_ira', 'j_ira', 'trey_529', 'louisa_529']
+# account_blacklist = ['brokerage', 't_ira', 'j_ira', 'trey_529', 'louisa_529']
 # account_blacklist = ['brokerage', 'j_ira']
 if 'account_blacklist' in locals():
     accounts = np.setdiff1d(accounts_in_config, account_blacklist)
@@ -69,6 +66,10 @@ else:
     print('No account blacklist')
     
 print(f'accounts_final: {accounts}')
+
+###############
+# accounts= ['usaa_savings', 't_ira', 'trey_529', 'tsp_mil', 'chipper_lane', 'elston_lane']
+###############
 
 ## Create Accounts
 all_accounts = {}
@@ -83,6 +84,11 @@ for account in accounts:
     elif account_class == 'Home_Equity':
         all_accounts[account] = Home_Equity(account, home_equity, category)
 
+# all_accounts['george_529'].construct_shares_df()
+# all_accounts['george_529'].construct_shares_df2()
+# all_accounts['tsp_mil'].construct_shares_df2()
+
+t3 = time.time()  #-------------------------------
 
 
 total_value_df = pd.DataFrame(index=date_range)
@@ -93,7 +99,7 @@ for category in categories:
         tmp_df = tmp_df.join(all_accounts[account].calculate_account_values().iloc[:,-1])
         total_value_df[f'{category}'] = tmp_df.sum(axis=1)
 
-print(total_value_df)
+t4 = time.time()  #-------------------------------
 
 # Create Plots #################################################################
 
@@ -103,6 +109,26 @@ print(total_value_df)
 from lib.plotting.plotly_plotting import make_plotly_plots
 make_plotly_plots(all_accounts, total_value_df)
 
+t5 = time.time()  #-------------------------------
+
+
 # Output CSVs ##################################################################
-# for account in accounts:
-#     all_accounts[account].calculate_account_values().to_csv(f'./output/csvs/{account}_529_values.csv')
+for account in accounts:
+    all_accounts[account].calculate_account_values().to_csv(f'./output/csvs/{account}_values.csv')
+    # print(all_accounts[account].name)
+    # print(all_accounts[account].calculate_account_values().index.dtype)
+    # print(all_accounts[account].calculate_account_values().dtypes)
+    # print(all_accounts[account].calculate_account_values())
+# all_accounts['tsp_mil'].construct_shares_df().to_csv('output/tsp_mil_shares.csv')
+
+
+
+t6 = time.time()  #-------------------------------
+
+print(f'time to read data: {(t2-t1):.2f}')
+print(f'time to create accounts: {(t3-t2):.2f}')
+print(f'time to create categorized df: {(t4-t3):.2f}')
+print(f'time to create plots: {(t5-t4):.2f}')
+print(f'time to write CSVs: {(t6-t5):.2f}')
+
+t7 = time.time()  #-------------------------------
