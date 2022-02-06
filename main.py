@@ -15,7 +15,7 @@ from lib.classes.Home_Equity import Home_Equity
 # Argument Parser
 from argparse import ArgumentParser
 parser = ArgumentParser(description = 'A portfolio analysis tool')
-parser.add_argument('-np', '--no-plot', action='store_true')
+parser.add_argument('-np', '--no-plot', action='store_true', help='Set this flag to skip plotting')
 args = parser.parse_args()
 
 
