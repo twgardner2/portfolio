@@ -16,6 +16,7 @@ from lib.classes.Home_Equity import Home_Equity
 from argparse import ArgumentParser
 parser = ArgumentParser(description = 'A portfolio analysis tool')
 parser.add_argument('-np', '--no-plot', action='store_true', help='Set this flag to skip plotting')
+parser.add_argument('-x', '--exclude', help='Pass a comma-separated list of accounts to exclude')
 args = parser.parse_args()
 
 
@@ -54,29 +55,26 @@ accounts_in_raw_data_but_not_config = \
     np.setdiff1d(accounts_in_raw_data, accounts_in_config)
 if len(accounts_in_raw_data_but_not_config):
     warnings.warn(
-        f'''WARNING: The following accounts are in the raw data but are not in 
-        accounts_config and will be ignored: 
-        {accounts_in_raw_data_but_not_config}''')
+        f'''WARNING: The following accounts are in the raw data but are '''\
+        f'''not in accounts_config and will be ignored: ''' \
+        f'''{accounts_in_raw_data_but_not_config}''')
 
-## Blacklist accounts for troubleshooting ###
-# account_blacklist = ['brokerage', 't_ira', 'j_ira', 'trey_529', 'louisa_529']
-# account_blacklist = ['brokerage', 'j_ira']
-# account_blacklist = ['brokerage', 't_ira', 'trey_529', 'louisa_529']
-if 'account_blacklist' in locals():
-    accounts = np.setdiff1d(accounts_in_config, account_blacklist)
+## Exclude accounts from analysis
+if args.exclude:
+    accounts_to_exclude = args.exclude.split(',')
+    print(f"Excluding accounts: {accounts_to_exclude}")
+    accounts = np.setdiff1d(accounts_in_config, accounts_to_exclude)
+
+    accounts_to_exclude_that_dont_exist = np.setdiff1d(accounts_to_exclude, accounts_in_raw_data)
+    if len(accounts_to_exclude_that_dont_exist):
+        warnings.warn(
+        f'''WARNING: The following accounts passed to be excluded don't ''' \
+        f'''exist in accounts_config: {accounts_to_exclude_that_dont_exist}''')
+
 else:
     accounts = accounts_in_config
 
-if 'account_blacklist' in locals():
-    print(f'account_blacklist: {account_blacklist}')
-else:
-    print('No account blacklist')
-    
-print(f'accounts_final: {accounts}')
-
-###############
-# accounts= ['usaa_savings', 't_ira', 'trey_529', 'tsp_mil', 'chipper_lane', 'elston_lane']
-###############
+print(f'Included accounts: {accounts}')
 
 ## Create Accounts
 all_accounts = {}
@@ -91,9 +89,6 @@ for account in accounts:
     elif account_class == 'Home_Equity':
         all_accounts[account] = Home_Equity(account, home_equity, category)
 
-# all_accounts['george_529'].construct_shares_df()
-# all_accounts['george_529'].construct_shares_df2()
-# all_accounts['tsp_mil'].construct_shares_df2()
 
 t3 = time.time()  #-------------------------------
 
@@ -101,7 +96,6 @@ t3 = time.time()  #-------------------------------
 total_value_df = pd.DataFrame(index=date_range)
 for category in categories:
     tmp_df = pd.DataFrame(index=date_range)
-    # print([x[0] for x in all_accounts.items() if x[1].category==category])
     for account in [x[0] for x in all_accounts.items() if x[1].category==category]:
         tmp_df = tmp_df.join(all_accounts[account].calculate_account_values().iloc[:,-1])
         total_value_df[f'{category}'] = tmp_df.sum(axis=1)
@@ -109,10 +103,6 @@ for category in categories:
 t4 = time.time()  #-------------------------------
 
 # Create Plots #################################################################
-
-# from lib.plotting.mpl_plotting import make_matplotlib_plots
-# make_matplotlib_plots(all_accounts)
-
 if not args.no_plot:
     from lib.plotting.plotly_plotting import make_plotly_plots
     make_plotly_plots(all_accounts, total_value_df)
@@ -123,11 +113,6 @@ if not args.no_plot:
 # Output CSVs ##################################################################
 for account in accounts:
     all_accounts[account].calculate_account_values().to_csv(f'./output/csvs/{account}_values.csv')
-    # print(all_accounts[account].name)
-    # print(all_accounts[account].calculate_account_values().index.dtype)
-    # print(all_accounts[account].calculate_account_values().dtypes)
-    # print(all_accounts[account].calculate_account_values())
-# all_accounts['tsp_mil'].construct_shares_df().to_csv('output/tsp_mil_shares.csv')
 
 t6 = time.time()  #-------------------------------
 
