@@ -15,6 +15,19 @@ class Inv_Account:
         self.date_range = util.date_range_generator(self.start_date, self.end_date)
         self.prices = prices.loc[prices.index>=self.start_date, self.symbols]
 
+    def __str__(self):
+        last_month_values = self.calculate_account_values().iloc[-1]
+
+        result = \
+        f"==========\n" \
+        f"Account: {self.name}\n" \
+        f"Category: {self.category}\n" \
+        f"Values:\n" \
+        f"{last_month_values.to_string()}\n" \
+        f"==========\n"
+
+        return(result)
+
     @staticmethod
     def calculate_shares_on_date(date, symbol, trans):
         '''Calculates the number of shares of a symbol on a date'''
@@ -90,6 +103,7 @@ class Inv_Account:
                 df[symbol].iloc[i] = shares
 
         return(df)
+
 
     def construct_shares_df2(self):
         '''Constructs df of shares for each symbol over date_range for 
