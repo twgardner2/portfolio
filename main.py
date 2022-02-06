@@ -10,14 +10,16 @@ import time
 from lib.classes.Inv_Account import Inv_Account
 from lib.classes.Bank_Account import Bank_Account
 from lib.classes.Home_Equity import Home_Equity
-import pandas as pd
-import numpy as np
-import warnings
 
-import time
+
+# Argument Parser
+from argparse import ArgumentParser
+parser = ArgumentParser(description = 'A portfolio analysis tool')
+parser.add_argument('-np', '--no-plot', action='store_true')
+args = parser.parse_args()
+
 
 t1 = time.time()  #-------------------------------
-
 
 # Helper Variables and Functions ########################################################
 # Determine date bounds
@@ -59,6 +61,7 @@ if len(accounts_in_raw_data_but_not_config):
 ## Blacklist accounts for troubleshooting ###
 # account_blacklist = ['brokerage', 't_ira', 'j_ira', 'trey_529', 'louisa_529']
 # account_blacklist = ['brokerage', 'j_ira']
+# account_blacklist = ['brokerage', 't_ira', 'trey_529', 'louisa_529']
 if 'account_blacklist' in locals():
     accounts = np.setdiff1d(accounts_in_config, account_blacklist)
 else:
@@ -110,10 +113,11 @@ t4 = time.time()  #-------------------------------
 # from lib.plotting.mpl_plotting import make_matplotlib_plots
 # make_matplotlib_plots(all_accounts)
 
-from lib.plotting.plotly_plotting import make_plotly_plots
-make_plotly_plots(all_accounts, total_value_df)
+if not args.no_plot:
+    from lib.plotting.plotly_plotting import make_plotly_plots
+    make_plotly_plots(all_accounts, total_value_df)
 
-t5 = time.time()  #-------------------------------
+    t5 = time.time()  #-------------------------------
 
 
 # Output CSVs ##################################################################
@@ -125,14 +129,19 @@ for account in accounts:
     # print(all_accounts[account].calculate_account_values())
 # all_accounts['tsp_mil'].construct_shares_df().to_csv('output/tsp_mil_shares.csv')
 
-
-
 t6 = time.time()  #-------------------------------
 
 print(f'time to read data: {(t2-t1):.2f}')
 print(f'time to create accounts: {(t3-t2):.2f}')
 print(f'time to create categorized df: {(t4-t3):.2f}')
-print(f'time to create plots: {(t5-t4):.2f}')
-print(f'time to write CSVs: {(t6-t5):.2f}')
+if args.no_plot:
+    print(f'time to write CSVs: {(t6-t4):.2f}')
+if not args.no_plot:
+    print(f'time to create plots: {(t5-t4):.2f}')
+    print(f'time to write CSVs: {(t6-t5):.2f}')
 
 t7 = time.time()  #-------------------------------
+
+# print(all_accounts['t_ira'])
+# print(all_accounts['usaa_savings'])
+# print(all_accounts['chipper_lane'])
