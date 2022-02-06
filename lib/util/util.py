@@ -6,7 +6,8 @@ import pandas as pd
 
 
 def dateparse(x):
-    return(pd.to_datetime(x, format='%Y%m%d').date())
+    # return(pd.to_datetime(x, format='%Y%m%d').date())
+    return(pd.to_datetime(x, format='%Y%m%d'))
 
 
 def read_timeseries_csv(file):
@@ -35,11 +36,11 @@ def date_range_generator(start, end):
 
     # If ends on 1st, use end date
     if end.day == 1:
-
         last_date = end
     # Else, use 1st of its month
     else:
         last_date = datetime.date(year=end.year, month=end.month, day=1)
+        
     date = first_date
     date_range = [first_date]
 
