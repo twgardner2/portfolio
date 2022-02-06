@@ -22,6 +22,22 @@ class Home_Equity:
         self.start_date = util.previous_first_of_month(self.home_equity.index.min())
         self.date_range = util.date_range_generator(self.start_date, self.end_date)
 
+    def __str__(self):
+        last_month_values = self.calculate_account_values().iloc[-1]
+
+        banner = f"========== Account: {self.name} =========="
+        footer = "=" * len(banner)
+
+        result = \
+        "\n" + banner + "\n" +\
+        f"* Account: {self.name}\n" \
+        f"* Category: {self.category}\n" \
+        f"* Values as of {last_month_values.name.date()}:\n" \
+        f"{last_month_values.to_string()}\n" +\
+        footer 
+
+        return(result)
+
     def calculate_account_values(self):
 
         # Filter home_equity data on date range

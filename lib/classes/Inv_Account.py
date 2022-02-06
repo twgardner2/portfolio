@@ -18,13 +18,16 @@ class Inv_Account:
     def __str__(self):
         last_month_values = self.calculate_account_values().iloc[-1]
 
+        banner = f"========== Account: {self.name} =========="
+        footer = "=" * len(banner)
+
         result = \
-        f"==========\n" \
-        f"Account: {self.name}\n" \
-        f"Category: {self.category}\n" \
-        f"Values:\n" \
-        f"{last_month_values.to_string()}\n" \
-        f"==========\n"
+        "\n" + banner + "\n" +\
+        f"* Account: {self.name}\n" \
+        f"* Category: {self.category}\n" \
+        f"* Values as of {last_month_values.name.date()}:\n" \
+        f"{last_month_values.to_string()}\n" +\
+        footer 
 
         return(result)
 
