@@ -17,6 +17,7 @@ from argparse import ArgumentParser
 parser = ArgumentParser(description = 'A portfolio analysis tool')
 parser.add_argument('-np', '--no-plot', action='store_true', help='Set this flag to skip plotting')
 parser.add_argument('-x', '--exclude', help='Pass a comma-separated list of accounts to exclude')
+parser.add_argument('-nc', '--no-csv', action='store_true', help='Set this flag to skip writing out CSVs')
 args = parser.parse_args()
 
 
@@ -44,7 +45,7 @@ categories = set([x[1]['category'] for x in accounts_config.items()])
 t2 = time.time()  #-------------------------------
 
 # Create accounts ##############################################################
-'''Going to make accounts from the accounts_config object, but will check 
+'''Make accounts from the accounts_config object, but will check 
 against all of the accounts in the raw data and throw a warning if there is an
 account missing in the config'''
 
@@ -111,8 +112,9 @@ if not args.no_plot:
 
 
 # Output CSVs ##################################################################
-for account in accounts:
-    all_accounts[account].calculate_account_values().to_csv(f'./output/csvs/{account}_values.csv')
+if not args.no_csv:
+    for account in accounts:
+        all_accounts[account].calculate_account_values().to_csv(f'./output/csvs/{account}_values.csv')
 
 t6 = time.time()  #-------------------------------
 
