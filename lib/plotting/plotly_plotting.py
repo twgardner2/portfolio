@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 
 
 # Plotly plots ################################################################
-def make_plotly_plots(all_accounts, total_value_df):
+def make_plotly_accounts_plot(all_accounts):
     ## Accounts ###################################################################
 
     fig = go.Figure()
@@ -29,6 +29,7 @@ def make_plotly_plots(all_accounts, total_value_df):
 
 
     ### Categories #################################################################
+def make_plotly_categories_plot(total_value_df):
     fig = go.Figure()
 
     # for category in categories:
@@ -94,3 +95,19 @@ def make_plotly_plots(all_accounts, total_value_df):
 
     fig.show()
     fig.write_image("output/category_totals.png")
+
+def make_plotly_single_account_plot(inv_acct):
+
+    fig = go.Figure()
+
+    # print(inv_acct)
+    # print(inv_acct.calculate_account_values())
+
+    for inv in inv_acct.calculate_account_values().columns:
+        # print(inv)
+        fig.add_trace(go.Scatter(x=inv_acct.calculate_account_values().index,
+                    y=inv_acct.calculate_account_values()[inv],
+                    mode = 'lines',
+                    name=inv))
+    fig.show()
+

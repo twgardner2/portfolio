@@ -71,7 +71,6 @@ if args.exclude:
         warnings.warn(
         f'''WARNING: The following accounts passed to be excluded don't ''' \
         f'''exist in accounts_config: {accounts_to_exclude_that_dont_exist}''')
-
 else:
     accounts = accounts_in_config
 
@@ -105,8 +104,16 @@ t4 = time.time()  #-------------------------------
 
 # Create Plots #################################################################
 if not args.no_plot:
-    from lib.plotting.plotly_plotting import make_plotly_plots
-    make_plotly_plots(all_accounts, total_value_df)
+    from lib.plotting.plotly_plotting import make_plotly_accounts_plot
+    from lib.plotting.plotly_plotting import make_plotly_categories_plot
+    from lib.plotting.plotly_plotting import make_plotly_single_account_plot
+
+    # make_plotly_accounts_plot(all_accounts)
+    # make_plotly_categories_plot(total_value_df)
+
+    # make_plotly_single_account_plot(all_accounts['j_ira'])
+    # make_plotly_single_account_plot(all_accounts['brokerage'])
+    make_plotly_single_account_plot(all_accounts['tsp_civ'])
 
     t5 = time.time()  #-------------------------------
 
