@@ -28,7 +28,7 @@ def make_plotly_accounts_plot(all_accounts):
 
 
 
-    ### Categories #################################################################
+### Categories #################################################################
 def make_plotly_categories_plot(total_value_df):
     fig = go.Figure()
 

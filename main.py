@@ -108,12 +108,12 @@ if not args.no_plot:
     from lib.plotting.plotly_plotting import make_plotly_categories_plot
     from lib.plotting.plotly_plotting import make_plotly_single_account_plot
 
-    # make_plotly_accounts_plot(all_accounts)
-    # make_plotly_categories_plot(total_value_df)
+    make_plotly_accounts_plot(all_accounts)
+    make_plotly_categories_plot(total_value_df)
 
     # make_plotly_single_account_plot(all_accounts['j_ira'])
     # make_plotly_single_account_plot(all_accounts['brokerage'])
-    make_plotly_single_account_plot(all_accounts['tsp_civ'])
+    # make_plotly_single_account_plot(all_accounts['tsp_civ'])
 
     t5 = time.time()  #-------------------------------
 
