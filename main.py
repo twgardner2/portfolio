@@ -116,7 +116,8 @@ if not args.no_plot:
     # make_plotly_single_account_plot(all_accounts['tsp_civ'])
 
     t5 = time.time()  #-------------------------------
-
+else:
+    print('skipping plotting...')
 
 # Output CSVs ##################################################################
 if not args.no_csv:
