@@ -3,6 +3,7 @@ from dateutil.relativedelta import relativedelta
 import shutil
 from os import path
 import pandas as pd
+import re
 
 
 def dateparse(x):
@@ -10,7 +11,8 @@ def dateparse(x):
     return(pd.to_datetime(x, format='%Y%m%d'))
 
 
-def read_timeseries_csv(file):
+def read_timeseries_csv(file, shape):
+
     data = pd.read_csv(
         file,
         sep=r'\s*,\s*',
@@ -19,6 +21,20 @@ def read_timeseries_csv(file):
         parse_dates=['date'],
         date_parser=dateparse
     )
+
+    print()
+    print(f'file: {file}')
+    for (col, colData) in data.iteritems():
+        print(f'{col}: {data[col].dtype}')
+
+    for (col, colData) in data.iteritems():
+        for key in shape:
+            # print(f'key: {key}')
+            if re.search(key, col):
+                print(f'key: {key}, col: {data[col].dtype}, shape: {shape[key]}')
+                assert(shape[key](data[col].dtype))
+                break
+
     return(data)
 
 
