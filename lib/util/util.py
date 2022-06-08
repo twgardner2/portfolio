@@ -4,6 +4,7 @@ import shutil
 from os import path
 import pandas as pd
 import re
+import sys
 
 
 def dateparse(x):
@@ -22,18 +23,33 @@ def read_timeseries_csv(file, shape):
         date_parser=dateparse
     )
 
-    print()
-    print(f'file: {file}')
+    # Validate column types - Iterate over columns
     for (col, colData) in data.iteritems():
-        print(f'{col}: {data[col].dtype}')
+        # Set flag to check that each column has a match in the validation object
+        columnMatchFound = False
 
-    for (col, colData) in data.iteritems():
+        # Iterate over validation object
         for key in shape:
-            # print(f'key: {key}')
+
+            # If match is found
             if re.search(key, col):
-                print(f'key: {key}, col: {data[col].dtype}, shape: {shape[key]}')
-                assert(shape[key](data[col].dtype))
-                break
+
+                # Set flag
+                columnMatchFound = True
+
+                # Try assertion
+                try:
+                    assert shape[key](data[col].dtype) , "Input validation error"
+                    break
+                except AssertionError as error:
+                    print(f'{error} in {file}')
+                    print(f'   ☹  {col} should be {shape[key].__name__} but is {data[col].dtype}')
+                    sys.exit(1)
+        
+        # If flag never set, error 
+        if columnMatchFound == 0:
+            print(f'   ☹  No match found for column "{col}" of {file} in validation shape definition')
+            sys.exit(1)
 
     return(data)
 

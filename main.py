@@ -31,27 +31,42 @@ end_date = util.previous_first_of_month()
 date_range = util.date_range_generator(start_date, end_date)
 
 # Read data ####################################################################
-transactions = util.read_timeseries_csv('./data/transactions.csv', {
-        'account': pd.api.types.is_object_dtype,
-        'symbol': pd.api.types.is_object_dtype,
-        'shares': pd.api.types.is_object_dtype,
-        'price': pd.api.types.is_float_dtype,
-        'type': pd.api.types.is_object_dtype,
-        'note': pd.api.types.is_object_dtype,
-    })
-prices = util.read_timeseries_csv('./data/prices.csv', {
-        '.*': pd.api.types.is_float_dtype,
-    })
-bank_balances = util.read_timeseries_csv('./data/bank.csv', {
-        'account': pd.api.types.is_object_dtype,
-        'balance': pd.api.types.is_float_dtype,
-    })
-home_equity = util.read_timeseries_csv('./data/home_equity.csv', {
-        'home': pd.api.types.is_object_dtype,
-        'market_value': pd.api.types.is_float_dtype,
-        'mortgage_principal': pd.api.types.is_float_dtype,
-        'note': pd.api.types.is_object_dtype,
-    })
+transactions = util.read_timeseries_csv(
+    file = './data/transactions.csv', 
+    shape = {
+        'account':              pd.api.types.is_object_dtype,
+        'symbol':               pd.api.types.is_object_dtype,
+        'shares':               pd.api.types.is_object_dtype,
+        'price':                pd.api.types.is_float_dtype,
+        'type':                 pd.api.types.is_object_dtype,
+        'note':                 pd.api.types.is_object_dtype,
+    }
+)
+
+prices = util.read_timeseries_csv(
+    file = './data/prices.csv', 
+    shape = {
+        '.*':                   pd.api.types.is_float_dtype,
+    }
+)
+
+bank_balances = util.read_timeseries_csv(
+    file = './data/bank.csv', 
+    shape = {
+        'account':              pd.api.types.is_object_dtype,
+        'balance':              pd.api.types.is_float_dtype,
+    }
+)
+
+home_equity = util.read_timeseries_csv(
+    file = './data/home_equity.csv', 
+    shape = {
+        'home':                 pd.api.types.is_object_dtype,
+        'market_value':         pd.api.types.is_float_dtype,
+        'mortgage_principal':   pd.api.types.is_float_dtype,
+        'note':                 pd.api.types.is_object_dtype,
+    }
+)
 
 # Get relevant values from raw data
 inv_accounts = transactions['account'].unique()
