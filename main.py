@@ -16,6 +16,7 @@ from lib.classes.Home_Equity import Home_Equity
 from argparse import ArgumentParser
 parser = ArgumentParser(description = 'A portfolio analysis tool')
 parser.add_argument('-np', '--no-plot', action='store_true', help='Set this flag to skip plotting')
+parser.add_argument('-nv', '--no-validation', action='store_true', help='Set this flag to skip validating inputs')
 parser.add_argument('-x', '--exclude', help='Pass a comma-separated list of accounts to exclude')
 parser.add_argument('-nc', '--no-csv', action='store_true', help='Set this flag to skip writing out CSVs')
 args = parser.parse_args()
@@ -23,7 +24,7 @@ args = parser.parse_args()
 
 t1 = time.time()  #-------------------------------
 
-# Helper Variables and Functions ########################################################
+# Helper Variables and Functions ###############################################
 # Determine date bounds
 start_date = datetime.date(2010, 5, 1)
 today = datetime.date.today()
@@ -67,6 +68,12 @@ home_equity = util.read_timeseries_csv(
         'note':                 pd.api.types.is_object_dtype,
     }
 )
+
+# Validate data ################################################################
+if args.no_validation:
+    print('Skipping input validation...')
+else:
+    util.validate_inputs(transactions, prices, bank_balances, home_equity)
 
 # Get relevant values from raw data
 inv_accounts = transactions['account'].unique()
@@ -148,7 +155,7 @@ if not args.no_plot:
 
     t5 = time.time()  #-------------------------------
 else:
-    print('skipping plotting...')
+    print('Skipping plotting...')
 
 # Output CSVs ##################################################################
 if not args.no_csv:

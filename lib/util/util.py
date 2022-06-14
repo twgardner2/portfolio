@@ -53,6 +53,25 @@ def read_timeseries_csv(file, shape):
 
     return(data)
 
+def validate_inputs(transactions, prices, bank_balances, home_equity):
+    validation_errors = []
+    for (col, colData) in prices.iteritems():
+        position_active = False
+        for index, el in colData.iteritems():
+            
+            if pd.isna(el) and position_active:
+                validation_errors.append(f'☹ {col} is missing a price at {index}')
+                print(f'☹ {col} is missing a price on {index.date()}')
+                # print(f"{index}: {el}")
+                # print(f"{index.date()}: {el}")
+                # sys.exit(1)
+            elif el==-1:
+                position_active = False
+            elif not pd.isna(el) and el!=-1:
+                position_active = True
+
+    print(len(validation_errors))
+    return True
 
 def date_range_generator(start, end):
     '''Create a series of the 1st of each month between the start and end 
