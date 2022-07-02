@@ -104,7 +104,7 @@ if len(accounts_in_raw_data_but_not_config):
 ## Exclude accounts from analysis
 if args.exclude:
     accounts_to_exclude = args.exclude.split(',')
-    print(f"Excluding accounts: {accounts_to_exclude}")
+    print(f"Excluding accounts: {accounts_to_exclude}\n")
     accounts = np.setdiff1d(accounts_in_config, accounts_to_exclude)
 
     accounts_to_exclude_that_dont_exist = np.setdiff1d(accounts_to_exclude, accounts_in_raw_data)
