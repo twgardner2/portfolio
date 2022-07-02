@@ -137,7 +137,7 @@ class Inv_Account:
                 # Get number of shares at previous index (date)
                 shares_value = df.iloc[shares_i-1][symbol]
 
-                # Get indices (dates) in shares df on either side of the trans
+                # Get shares df indices (dates) on either side of the trans
                 shares_date_pre_trans = df.index[shares_i-1]
                 shares_date_post_trans = df.index[shares_i]
 
