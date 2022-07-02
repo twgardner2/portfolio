@@ -1,5 +1,7 @@
 import pandas as pd
 import lib.util.util as util
+import sys
+import re
 
 
 class Home_Equity:
@@ -7,7 +9,8 @@ class Home_Equity:
         self.name = name
         self.category = category
 
-        self.home_equity = home_equity[home_equity['home']==name]
+        self.home_equity = home_equity.filter(regex=name)
+        self.home_equity = self.home_equity.rename(columns = lambda x: re.sub(f'_{name}', '', x))
 
         self.sold = (self.home_equity['note'] == 'sold').any()
 
@@ -45,13 +48,18 @@ class Home_Equity:
         mask = self.home_equity.index.isin(self.date_range)
         df = self.home_equity.loc[mask]
 
-        # Drop the 'home' column
-        df = df.drop('home', axis=1)
+        # The following assignments give false SettingWithCopyWarnings, disable,
+        # then reenable below
+        original_SettingWithCopyWarning_value = pd.options.mode.chained_assignment
+        pd.options.mode.chained_assignment = None
 
         # Fill latest market_value does for life of mortgage
-        df['market_value'] = df['market_value'].ffill(axis=0)
+        df.loc[:, 'market_value'] = df.loc[:,'market_value'].ffill(axis=0)
 
         # Calculate total_value (equity = market value - principal)
-        df[f'{self.name}_total_value'] = df['market_value'] - df['mortgage_principal']
+        df.loc[:,f'{self.name}_total_value'] = df.apply(lambda row: row.loc['market_value'] - row.loc['mortgage_principal'], axis=1)
+
+        # Reenable SettingWithCopyWarnings
+        pd.options.mode.chained_assignment = original_SettingWithCopyWarning_value
 
         return(df)

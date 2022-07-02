@@ -8,7 +8,7 @@ class Bank_Account:
     def __init__(self, name, balances, category):
         self.name = name
         self.category = category
-        self.balances = balances[balances['account'] == name]
+        self.balances = balances[name]
         self.start_date = util.previous_first_of_month(self.balances.index.min())
         self.end_date = pd.to_datetime('today')
         self.date_range = util.date_range_generator(self.start_date, self.end_date)
@@ -36,10 +36,7 @@ class Bank_Account:
         mask = self.balances.index.isin(self.date_range)
         df = self.balances.loc[mask]
 
-        # Drop the account column, which is already filtered on
-        df = df.drop('account', axis=1)
-
         # Rename balance to f'{self.name}_total_value'
-        df = df.rename({'balance': f'{self.name}_total_value'}, axis=1)
+        df = df.rename({f'{self.name}': f'{self.name}_total_value'}, axis=1)
 
-        return(df)
+        return(df.to_frame())

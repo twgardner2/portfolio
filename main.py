@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import warnings
 import time
+import re
 
 # Custom classes
 from lib.classes.Inv_Account import Inv_Account
@@ -16,20 +17,21 @@ from lib.classes.Home_Equity import Home_Equity
 from argparse import ArgumentParser
 parser = ArgumentParser(description = 'A portfolio analysis tool')
 parser.add_argument('-np', '--no-plot', action='store_true', help='Set this flag to skip plotting')
+parser.add_argument('-nv', '--no-validation', action='store_true', help='Set this flag to skip validating inputs')
 parser.add_argument('-x', '--exclude', help='Pass a comma-separated list of accounts to exclude')
 parser.add_argument('-nc', '--no-csv', action='store_true', help='Set this flag to skip writing out CSVs')
 args = parser.parse_args()
 
+# Collect runtime data
+runtimes = []
+runtimes.append({'label': 'Start','time': time.time()})
 
-t1 = time.time()  #-------------------------------
-
-# Helper Variables and Functions ########################################################
+# Helper Variables and Functions ###############################################
 # Determine date bounds
 start_date = datetime.date(2010, 5, 1)
 today = datetime.date.today()
 end_date = util.previous_first_of_month()
 date_range = util.date_range_generator(start_date, end_date)
-
 # Read data ####################################################################
 transactions = util.read_timeseries_csv(
     file = './data/transactions.csv', 
@@ -53,28 +55,35 @@ prices = util.read_timeseries_csv(
 bank_balances = util.read_timeseries_csv(
     file = './data/bank.csv', 
     shape = {
-        'account':              pd.api.types.is_object_dtype,
-        'balance':              pd.api.types.is_float_dtype,
+        '.*':                   pd.api.types.is_float_dtype,
     }
 )
 
 home_equity = util.read_timeseries_csv(
     file = './data/home_equity.csv', 
     shape = {
-        'home':                 pd.api.types.is_object_dtype,
+        # 'home':                 pd.api.types.is_object_dtype,
         'market_value':         pd.api.types.is_float_dtype,
         'mortgage_principal':   pd.api.types.is_float_dtype,
         'note':                 pd.api.types.is_object_dtype,
     }
 )
+runtimes.append({'label': 'Read Data','time': time.time()})
 
-# Get relevant values from raw data
+# Validate data ################################################################
+if args.no_validation:
+    print('Skipping input validation...')
+else:
+    util.validate_inputs(transactions, prices, bank_balances, home_equity)
+    runtimes.append({'label': 'Input Validation', 'time':time.time()})
+
+# Get categorical values from raw data #########################################
 inv_accounts = transactions['account'].unique()
-bank_accounts = bank_balances['account'].unique()
-homes = home_equity['home'].unique()
+bank_accounts = bank_balances.columns.unique()
+homes = home_equity.columns.unique().to_list()
+homes = [home for home in homes if re.search(r'mortgage_principal_(.*)', home)]
+homes = [re.search(r'mortgage_principal_(.*)', x).groups()[0] for x in homes]
 categories = set([x[1]['category'] for x in accounts_config.items()])
-
-t2 = time.time()  #-------------------------------
 
 # Create accounts ##############################################################
 '''Make accounts from the accounts_config object, but will check 
@@ -95,7 +104,7 @@ if len(accounts_in_raw_data_but_not_config):
 ## Exclude accounts from analysis
 if args.exclude:
     accounts_to_exclude = args.exclude.split(',')
-    print(f"Excluding accounts: {accounts_to_exclude}")
+    print(f"Excluding accounts: {accounts_to_exclude}\n")
     accounts = np.setdiff1d(accounts_in_config, accounts_to_exclude)
 
     accounts_to_exclude_that_dont_exist = np.setdiff1d(accounts_to_exclude, accounts_in_raw_data)
@@ -121,9 +130,7 @@ for account in accounts:
     elif account_class == 'Home_Equity':
         all_accounts[account] = Home_Equity(account, home_equity, category)
 
-
-t3 = time.time()  #-------------------------------
-
+runtimes.append({'label': 'Create Accounts','time': time.time()})
 
 total_value_df = pd.DataFrame(index=date_range)
 for category in categories:
@@ -131,7 +138,8 @@ for category in categories:
     for account in [x[0] for x in all_accounts.items() if x[1].category==category]:
         tmp_df = tmp_df.join(all_accounts[account].calculate_account_values().iloc[:,-1])
     total_value_df[f'{category}'] = tmp_df.sum(axis=1)
-t4 = time.time()  #-------------------------------
+
+runtimes.append({'label': 'Create Categorized Accounts Data Frame','time': time.time()})
 
 # Create Plots #################################################################
 if not args.no_plot:
@@ -146,28 +154,17 @@ if not args.no_plot:
     # make_plotly_single_account_plot(all_accounts['brokerage'])
     # make_plotly_single_account_plot(all_accounts['tsp_civ'])
 
-    t5 = time.time()  #-------------------------------
+    runtimes.append({'label': 'Create Plots','time': time.time()})
 else:
-    print('skipping plotting...')
+    print('Skipping plotting...')
 
 # Output CSVs ##################################################################
 if not args.no_csv:
     for account in accounts:
         all_accounts[account].calculate_account_values().to_csv(f'./output/csvs/{account}_values.csv')
+    runtimes.append({'label': 'Create CSVs','time': time.time()})
 
-t6 = time.time()  #-------------------------------
-
-print(f'time to read data: {(t2-t1):.2f}')
-print(f'time to create accounts: {(t3-t2):.2f}')
-print(f'time to create categorized df: {(t4-t3):.2f}')
-if args.no_plot:
-    print(f'time to write CSVs: {(t6-t4):.2f}')
-if not args.no_plot:
-    print(f'time to create plots: {(t5-t4):.2f}')
-    print(f'time to write CSVs: {(t6-t5):.2f}')
-
-t7 = time.time()  #-------------------------------
-
-# print(all_accounts['t_ira'])
-# print(all_accounts['usaa_savings'])
-# print(all_accounts['chipper_lane'])
+# Print runtimes
+for i, time in enumerate(runtimes):
+    if i>0:
+        print(f'Time to {time["label"]}: {time["time"]-runtimes[i-1]["time"]:.2f}')

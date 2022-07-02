@@ -122,6 +122,7 @@ class Inv_Account:
             symbol_trans = self.trans[self.trans['symbol']==symbol]
             mask = symbol_trans.index <= self.date_range[-1]
             symbol_trans = symbol_trans.loc[mask]
+            symbol_trans = symbol_trans.sort_index()
 
             # Loop over the symbol's transactions, removing transactions after 
             # processing them 
@@ -136,7 +137,7 @@ class Inv_Account:
                 # Get number of shares at previous index (date)
                 shares_value = df.iloc[shares_i-1][symbol]
 
-                # Get indices (dates) in shares df on either side of the trans
+                # Get shares df indices (dates) on either side of the trans
                 shares_date_pre_trans = df.index[shares_i-1]
                 shares_date_post_trans = df.index[shares_i]
 

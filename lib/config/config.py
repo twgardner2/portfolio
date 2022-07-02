@@ -153,4 +153,8 @@ category_annotations = [
         'date': pd.to_datetime('20210402'),
         'text': 'Sold 5236 Elston Lane',
     },
+    {
+        'date': pd.to_datetime('20210926'),
+        'text': 'Started at USAF',
+    },
 ]

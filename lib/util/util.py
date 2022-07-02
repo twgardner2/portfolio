@@ -8,7 +8,6 @@ import sys
 
 
 def dateparse(x):
-    # return(pd.to_datetime(x, format='%Y%m%d').date())
     return(pd.to_datetime(x, format='%Y%m%d'))
 
 
@@ -39,7 +38,7 @@ def read_timeseries_csv(file, shape):
 
                 # Try assertion
                 try:
-                    assert shape[key](data[col].dtype) , "Input validation error"
+                    assert shape[key](data[col].dtype) or data[col].isnull().all(), "Input validation error"
                     break
                 except AssertionError as error:
                     print(f'{error} in {file}')
@@ -47,11 +46,63 @@ def read_timeseries_csv(file, shape):
                     sys.exit(1)
         
         # If flag never set, error 
-        if columnMatchFound == 0:
+        if not columnMatchFound:
             print(f'   ☹  No match found for column "{col}" of {file} in validation shape definition')
             sys.exit(1)
 
     return(data)
+
+
+def validate_inputs(transactions, prices, bank_balances, home_equity):
+    validation_errors = []
+
+    # Validate price data
+    ## Price allowed to be blank if "inactive." A -1 indicates a column is 
+    ## inactive and allowed to be validly left blank. A float turns the column
+    ## back active and disallows further blanks until another -1 is present.
+    for df in [prices, bank_balances]:
+        for (col, colData) in df.iteritems():
+            position_active = False
+            for index, el in colData.iteritems():
+                
+                if pd.isna(el) and position_active:
+                    validation_errors.append(f'☹  {col} is missing a price on {index.date()}')
+                    # print(f'☹ {col} is missing a price on {index.date()}')
+                    # print(f"{index}: {el}")
+                    # print(f"{index.date()}: {el}")
+                elif el==-1:
+                    position_active = False
+                elif not pd.isna(el) and el!=-1:
+                    position_active = True
+    # for (col, colData) in prices.iteritems():
+    #     position_active = False
+    #     for index, el in colData.iteritems():
+            
+    #         if pd.isna(el) and position_active:
+    #             validation_errors.append(f'☹  {col} is missing a price on {index.date()}')
+    #             # print(f'☹ {col} is missing a price on {index.date()}')
+    #             # print(f"{index}: {el}")
+    #             # print(f"{index.date()}: {el}")
+    #         elif el==-1:
+    #             position_active = False
+    #         elif not pd.isna(el) and el!=-1:
+    #             position_active = True
+    
+    # Validate bank data
+    ## Price allowed to be blank if "inactive." A -1 indicates a column is 
+    ## inactive and allowed to be validly left blank. A float turns the column
+    ## back active and disallows further blanks until another -1 is present.
+
+    # Check that there are prices for all months in which there are shares for each position
+
+
+    # Check validation_errors: if len > 0, print errors and exit w/ code 1
+    if len(validation_errors) > 0:
+        for error in validation_errors:
+            print(error)
+        sys.exit(1)
+
+    return True
 
 
 def date_range_generator(start, end):
@@ -105,6 +156,7 @@ def backup_data_file(fn):
         # dst = src + '.backup'
         shutil.copy(src, dest)
 
+
 def previous_first_of_month(date = datetime.date.today()):
     if date.day == 1:
         return_date = date + relativedelta(months=-1)
@@ -113,6 +165,7 @@ def previous_first_of_month(date = datetime.date.today()):
 
     return_date = pd.to_datetime(return_date)
     return(return_date)
+
 
 def next_first_of_month(date = datetime.date.today()):
     if date.day == 1:
