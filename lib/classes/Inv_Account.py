@@ -122,6 +122,7 @@ class Inv_Account:
             symbol_trans = self.trans[self.trans['symbol']==symbol]
             mask = symbol_trans.index <= self.date_range[-1]
             symbol_trans = symbol_trans.loc[mask]
+            symbol_trans = symbol_trans.sort_index()
 
             # Loop over the symbol's transactions, removing transactions after 
             # processing them 
