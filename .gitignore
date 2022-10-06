@@ -3,3 +3,4 @@ lib/api/
 *.pyc
 output/
 *.ods
+.~lock.*
