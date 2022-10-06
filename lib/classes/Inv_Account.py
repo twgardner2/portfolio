@@ -47,10 +47,10 @@ class Inv_Account:
         # Iterate over filtered transactions
         for i in range(len(symbol_trans)):
             # Stock increases
-            if symbol_trans.iloc[i]['type'].strip() in ['purchase', 'div_reinvest', 'stock_dividend', 'ltcp_reinvest']:
+            if symbol_trans.iloc[i]['type'].strip() in ['purchase', 'div_reinvest', 'stock_dividend', 'cg_reinvest']:
                 shares = shares + abs(float(symbol_trans.iloc[i]['shares']))
             # Stock decreases
-            elif symbol_trans.iloc[i]['type'].strip() in ['sale', 'fee']:
+            elif symbol_trans.iloc[i]['type'].strip() in ['sale', 'fee', 'cancellation']:
                 if symbol_trans.iloc[i]['shares'].strip() == 'all':
                     shares = 0
                 else:
@@ -94,9 +94,9 @@ class Inv_Account:
 
                 # Iterate over the month's trans and calculate new shares
                 for index, row in period_trans.iterrows():
-                    if row['type'] in ['purchase', 'div_reinvest', 'stock_dividend', 'ltcp_reinvest']:
+                    if row['type'] in ['purchase', 'div_reinvest', 'stock_dividend', 'cg_reinvest']:
                         shares += abs(float(row['shares']))
-                    elif row['type'] in ['sale', 'fee']:
+                    elif row['type'] in ['sale', 'fee', 'cancellation']:
                         if row['shares'] == 'all':
                             shares = 0
                         else:
@@ -152,10 +152,10 @@ class Inv_Account:
                 # the number of shares
                 for i in range(len(trans_between_dates)):
                     # Stock increases
-                    if trans_between_dates.iloc[i]['type'].strip() in ['purchase', 'div_reinvest', 'stock_dividend', 'ltcp_reinvest']:
+                    if trans_between_dates.iloc[i]['type'].strip() in ['purchase', 'div_reinvest', 'stock_dividend', 'cg_reinvest']:
                         shares_value = shares_value + float(trans_between_dates.iloc[i]['shares'])
                     # Stock decreases
-                    elif trans_between_dates.iloc[i]['type'].strip() in ['sale', 'fee']:
+                    elif trans_between_dates.iloc[i]['type'].strip() in ['sale', 'fee', 'cancellation']:
                         if trans_between_dates.iloc[i]['shares'].strip() == 'all':
                             shares_value = 0
                         else:

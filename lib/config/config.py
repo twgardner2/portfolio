@@ -68,6 +68,11 @@ accounts_config = {
         'label': 'Thrivent',
         'category': 'retirement',
     },
+    'thrivent_match': {
+        'class': 'Inv_Account',
+        'label': 'Thrivent Match',
+        'category': 'retirement',
+    },
     'tsp_civ': {
         'class': 'Inv_Account',
         'label': 'TSP - Civilian',
@@ -112,6 +117,10 @@ annotations = [
         'text': 'Started at Metron',
     },
     {
+        'date': pd.to_datetime('20200515'),
+        'text': 'Julia started at LOL',
+    },
+    {
         'date': pd.to_datetime('20150602'),
         'text': 'Started at Summit',
     },
@@ -144,6 +153,10 @@ category_annotations = [
     {
         'date': pd.to_datetime('20200501'),
         'text': 'Started at Metron',
+    },
+    {
+        'date': pd.to_datetime('20200515'),
+        'text': 'Julia started at LOL',
     },
     {
         'date': pd.to_datetime('20150602'),
