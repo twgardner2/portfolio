@@ -4,3 +4,4 @@ lib/api/
 output/
 *.ods
 .~lock.*
+test/
