@@ -6,6 +6,7 @@ import numpy as np
 import warnings
 import time
 import re
+import sys
 
 # Custom classes
 from lib.classes.Inv_Account import Inv_Account
@@ -62,12 +63,21 @@ bank_balances = util.read_timeseries_csv(
 home_equity = util.read_timeseries_csv(
     file = './data/home_equity.csv', 
     shape = {
-        # 'home':                 pd.api.types.is_object_dtype,
         'market_value':         pd.api.types.is_float_dtype,
         'mortgage_principal':   pd.api.types.is_float_dtype,
         'note':                 pd.api.types.is_object_dtype,
     }
 )
+
+distributions = util.read_timeseries_csv(
+    file = './data/distributions.csv', 
+    shape = {
+        'symbol':               pd.api.types.is_object_dtype,
+        'distribution':         pd.api.types.is_float_dtype,
+        'type':                 pd.api.types.is_object_dtype,
+    }
+)
+
 runtimes.append({'label': 'Read Data','time': time.time()})
 
 # Validate data ################################################################

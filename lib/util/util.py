@@ -12,15 +12,22 @@ def dateparse(x):
 
 
 def read_timeseries_csv(file, shape):
+    try:
+        data = pd.read_csv(
+            file,
+            sep=r'\s*,\s*',
+            engine='python',
+            index_col='date',
+            parse_dates=['date'],
+            # date_parser=pd.to_datetime
+            date_parser=dateparse
+        )
+        print(f'*** Successfully read {file} ***')
+    except Exception as e:
+        print(f'!!! Failed to read {file} !!!')
+        print(f'error: {e.__context__}')
+        sys.exit()
 
-    data = pd.read_csv(
-        file,
-        sep=r'\s*,\s*',
-        engine='python',
-        index_col='date',
-        parse_dates=['date'],
-        date_parser=dateparse
-    )
 
     # Validate column types - Iterate over columns
     for (col, colData) in data.iteritems():
