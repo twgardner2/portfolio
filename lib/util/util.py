@@ -5,6 +5,7 @@ from os import path
 import pandas as pd
 import re
 import sys
+from scipy import optimize
 
 
 def dateparse(x):
@@ -181,3 +182,14 @@ def next_first_of_month(date = datetime.date.today()):
         return_date = datetime.date(year=date.year, month=date.month, day=1) + relativedelta(months=1)
     return(return_date)
 
+
+# XIRR Implementation
+def xnpv(rate, cashflows):
+    chron_order = sorted(cashflows, key=lambda x: x[0])
+    t0 = chron_order[0][0]
+    return sum([cf/(1+rate)**((t-t0).days/365.0) for (t,cf) in chron_order])
+
+def xirr(cashflows, guess=0.1):
+    return optimize.newton(lambda r: xnpv(r, cashflows), guess)
+
+print(xirr([[datetime.date(2010, 5, 1), -10], [datetime.date(2010, 6, 1), 11]]))
