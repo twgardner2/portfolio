@@ -20,7 +20,7 @@ class Home_Equity:
         # else:
         #     self.end_date = pd.to_datetime('today')
         
-        self.end_date = pd.to_datetime('today')
+        self.end_date = pd.to_datetime('today').date()
 
         self.start_date = util.previous_first_of_month(self.home_equity.index.min())
         self.date_range = util.date_range_generator(self.start_date, self.end_date)

@@ -37,6 +37,10 @@ class Bank_Account:
         df = self.balances.loc[mask]
 
         # Rename balance to f'{self.name}_total_value'
+        try:
+            df = df.to_frame()
+        except Exception:
+            pass
         df = df.rename({f'{self.name}': f'{self.name}_total_value'}, axis=1)
 
-        return(df.to_frame())
+        return(df)

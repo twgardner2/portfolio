@@ -11,9 +11,9 @@ class Inv_Account:
         self.trans = trans[trans['account']==name]
         self.symbols = self.trans['symbol'].unique()
         self.start_date = util.previous_first_of_month(self.trans.index.min())
-        self.end_date = pd.to_datetime('today')
+        self.end_date = pd.to_datetime('today').date()
         self.date_range = util.date_range_generator(self.start_date, self.end_date)
-        self.prices = prices.loc[prices.index>=self.start_date, self.symbols]
+        self.prices = prices.loc[prices.index.date>=self.start_date, self.symbols]
 
     def __str__(self):
         last_month_values = self.calculate_account_values().iloc[-1]

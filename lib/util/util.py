@@ -22,8 +22,10 @@ def read_timeseries_csv(file, shape):
         date_parser=dateparse
     )
 
+    # data['date'] = data['date'].dt.date
+    data.index = pd.to_datetime(data.index)
     # Validate column types - Iterate over columns
-    for (col, colData) in data.iteritems():
+    for (col, colData) in data.items():
         # Set flag to check that each column has a match in the validation object
         columnMatchFound = False
 
@@ -61,9 +63,9 @@ def validate_inputs(transactions, prices, bank_balances, home_equity):
     ## inactive and allowed to be validly left blank. A float turns the column
     ## back active and disallows further blanks until another -1 is present.
     for df in [prices, bank_balances]:
-        for (col, colData) in df.iteritems():
+        for (col, colData) in df.items():
             position_active = False
-            for index, el in colData.iteritems():
+            for index, el in colData.items():
                 
                 if pd.isna(el) and position_active:
                     validation_errors.append(f'☹  {col} is missing a price on {index.date()}')
@@ -109,6 +111,8 @@ def date_range_generator(start, end):
     '''Create a series of the 1st of each month between the start and end 
     dates'''
 
+    # Make sure start and end are of type datetime.date
+
     # If starts on 1st, use start date
     if start.day == 1:
         first_date = start
@@ -120,6 +124,7 @@ def date_range_generator(start, end):
     # If ends on 1st, use end date
     if end.day == 1:
         last_date = end
+        # print(f'')
     # Else, use 1st of its month
     else:
         last_date = datetime.date(year=end.year, month=end.month, day=1)
@@ -127,9 +132,12 @@ def date_range_generator(start, end):
     date = first_date
     date_range = [first_date]
 
+    # print(f'type(date): {type(date)}')
+    # print(f'type(last_date): {type(last_date)}')
     while date < last_date:
         date = date + relativedelta(months=1)
         date_range.append(date)
+    # print('-------')
 
     date_range = pd.to_datetime(date_range)
     return (date_range)
@@ -163,7 +171,11 @@ def previous_first_of_month(date = datetime.date.today()):
     else:
         return_date = datetime.date(year=date.year, month=date.month, day=1)
 
-    return_date = pd.to_datetime(return_date)
+    # return_date = pd.to_datetime(return_date)
+    # if isinstance(return_date, pd.Timestamp):
+        # return_date = return_date.to_pydatetime()
+    if not isinstance(return_date, datetime.date):
+        return_date = return_date.date()
     return(return_date)
 
 
