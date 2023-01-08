@@ -7,6 +7,8 @@ import warnings
 import time
 import re
 import sys
+import os
+import re
 
 # Custom classes
 from lib.classes.Inv_Account import Inv_Account
@@ -34,8 +36,26 @@ today = datetime.date.today()
 end_date = util.previous_first_of_month()
 date_range = util.date_range_generator(start_date, end_date)
 # Read data ####################################################################
+raw_trans_base_path = './data/transactions_raw/'
+trans_csv_shape = {
+    'account':              pd.api.types.is_object_dtype,
+    'symbol':               pd.api.types.is_object_dtype,
+    'shares':               pd.api.types.is_object_dtype,
+    'price':                pd.api.types.is_float_dtype,
+    'type':                 pd.api.types.is_object_dtype,
+    'note':                 pd.api.types.is_object_dtype,
+}
+# for file in os.listdir(raw_trans_base_path):
+#     if re.search('^transactions_.*\.csv$', file):
+#         print(file)
+trans_raw_files = [raw_trans_base_path+f for f in os.listdir(raw_trans_base_path)]
+print(trans_raw_files)
+df_concat = pd.concat([util.read_timeseries_csv(file=f, shape=trans_csv_shape) for f in trans_raw_files])
+print(df_concat)
+sys.exit()
+
 transactions = util.read_timeseries_csv(
-    file = './data/transactions.csv', 
+    file = './data/transactions_concatenated.csv', 
     shape = {
         'account':              pd.api.types.is_object_dtype,
         'symbol':               pd.api.types.is_object_dtype,
