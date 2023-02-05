@@ -139,8 +139,8 @@ class Inv_Account:
                 first_trans_index = symbol_trans.index[0]
 
                 # Get closest shares df index (date) after the transaction date
-                shares_i = df.index.get_loc(
-                    first_trans_index, method='backfill')
+                shares_i = df.index.get_indexer(
+                    [first_trans_index], method='backfill')[0]
 
                 # Get number of shares at previous index (date)
                 shares_value = df.iloc[shares_i-1][symbol]
