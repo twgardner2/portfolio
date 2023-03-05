@@ -8,7 +8,9 @@
       "program": "${workspaceFolder}/main.py",
       "console": "integratedTerminal",
       "justMyCode": true,
-      "args": ["-np"]
+      "args": [
+        "-np"
+      ]
     }
   ]
 }

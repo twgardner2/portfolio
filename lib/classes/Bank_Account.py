@@ -1,5 +1,6 @@
 import pandas as pd
 import lib.util.util as util
+import datetime
 
 
 class Bank_Account:
@@ -9,9 +10,11 @@ class Bank_Account:
         self.name = name
         self.category = category
         self.balances = balances[name]
-        self.start_date = util.previous_first_of_month(self.balances.index.min())
+        self.start_date = util.previous_first_of_month(
+            self.balances.index.min())
         self.end_date = pd.to_datetime('today')
-        self.date_range = util.date_range_generator(self.start_date, self.end_date)
+        self.date_range = util.date_range_generator(
+            self.start_date, self.end_date)
 
     def __str__(self):
         last_month_values = self.calculate_account_values().iloc[-1]
@@ -20,14 +23,14 @@ class Bank_Account:
         footer = "=" * len(banner)
 
         result = \
-        "\n" + banner + "\n" +\
-        f"* Account: {self.name}\n" \
-        f"* Category: {self.category}\n" \
-        f"* Values as of {last_month_values.name.date()}:\n" \
-        f"{last_month_values.to_string()}\n" +\
-        footer 
+            "\n" + banner + "\n" +\
+            f"* Account: {self.name}\n" \
+            f"* Category: {self.category}\n" \
+            f"* Values as of {last_month_values.name.date()}:\n" \
+            f"{last_month_values.to_string()}\n" +\
+            footer
 
-        return(result)
+        return (result)
 
     def calculate_account_values(self):
 
@@ -37,6 +40,10 @@ class Bank_Account:
         df = self.balances.loc[mask]
 
         # Rename balance to f'{self.name}_total_value'
+        try:
+            df = df.to_frame()
+        except Exception:
+            pass
         df = df.rename({f'{self.name}': f'{self.name}_total_value'}, axis=1)
 
-        return(df.to_frame())
+        return (df)
