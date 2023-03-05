@@ -153,7 +153,7 @@ for category in categories:
     for account in [x[0] for x in all_accounts.items() if x[1].category == category]:
         tmp_df = tmp_df.join(
             all_accounts[account].calculate_account_values().iloc[:, -1])
-    total_value_df[f'{category}'] = tmp_df.sum(axis=1)
+    total_value_df[category] = tmp_df.sum(axis=1)
 
 runtimes.append(
     {'label': 'Create Categorized Accounts Data Frame', 'time': time.time()})

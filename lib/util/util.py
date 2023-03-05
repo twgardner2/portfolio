@@ -139,10 +139,14 @@ def date_range_generator(start, end):
     date = first_date
     date_range = [first_date]
 
-    # print(f'type(date): {type(date)}')
-    # print(f'type(last_date): {type(last_date)}')
+    # print(f'   {date} - type(date): {type(date)}')
+    # print(f'   {last_date} - type(last_date): {type(last_date)}')
+    if isinstance(date, pd.Timestamp):
+        # print("its a timestamp")
+        date = date.date()
     while date < last_date:
         date = date + relativedelta(months=1)
+        # print(f'type(date): {type(date)}')
         date_range.append(date)
     # print('-------')
 
@@ -176,15 +180,10 @@ def previous_first_of_month(date=datetime.date.today()):
     if date.day == 1:
         return_date = date + relativedelta(months=-1)
     else:
-        print(f'date: {date}')
-        print(f'date.year: {date.year}')
-        print(f'date.month: {date.month}')
         return_date = datetime.date(year=date.year, month=date.month, day=1)
 
-    # return_date = pd.to_datetime(return_date)
-    # if isinstance(return_date, pd.Timestamp):
-        # return_date = return_date.to_pydatetime()
     if not isinstance(return_date, datetime.date):
+        print(f'>>>not a date')
         return_date = return_date.date()
     return (return_date)
 

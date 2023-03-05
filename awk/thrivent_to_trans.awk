@@ -1,5 +1,5 @@
 BEGIN {
-    myaccount="thrivent"
+    myaccount="thrivent_match"
     symbol="aasmx"
     FS="\t"
     print "account,date,symbol,shares,price,type,note"
@@ -66,6 +66,6 @@ FNR > 1 {
         note="cap_gain"
     } 
 
-    #print myaccount","mydate","symbol","$3","$4","type","note
-    print "thrivent_match,"mydate","symbol","$3","$4","type","note
+    print myaccount","mydate","symbol","$3","$4","type","note
+    #print "thrivent_match,"mydate","symbol","$3","$4","type","note
 }
