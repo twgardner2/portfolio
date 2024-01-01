@@ -177,7 +177,9 @@ def backup_data_file(fn):
 
 
 def previous_first_of_month(date=datetime.date.today()):
-    if date.day == 1:
+    if date == datetime.date.today() and date.day == 1:
+        return_date = date
+    elif date.day == 1:
         return_date = date + relativedelta(months=-1)
     else:
         return_date = datetime.date(year=date.year, month=date.month, day=1)
