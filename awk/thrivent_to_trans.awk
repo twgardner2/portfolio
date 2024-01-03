@@ -1,18 +1,22 @@
 BEGIN {
+    myaccount="thrivent"
     myaccount="thrivent_match"
     symbol="aasmx"
     FS="\t"
     print "account,date,symbol,shares,price,type,note"
 }
 
-FNR==1 {}
+FNR==1 {
+    if(match($1, "Description")){
+        next
+    }
+}
 
-FNR > 1 {
+FNR >= 1 {
     # Reset variables
     mydate=""
     note=""
     type=""
-
 
     # Parse the date into my format
     parsedate="date --date="$2" +%Y%m%d"
@@ -20,8 +24,9 @@ FNR > 1 {
     close(parsedate)
 
     # Remove dollar sign from price
-    price=$4
     sub(/\$/, "", $4)
+    # Trim whitespace from price
+    sub(/ /, "", $4)
 
     # Determine transaction type
     if(match($1, /CANCEL|DECREASE|CNCL|FEE/)){
@@ -29,6 +34,8 @@ FNR > 1 {
     } else {
         shares=$3
     }
+    # Trim whitespace from shares
+    sub(/ /, "", $3)
 
     # Determine type and note
     if(match($1, /EMPLOYER CONTRIB/)){
@@ -44,6 +51,9 @@ FNR > 1 {
         type="cancellation"
         note="employer_correction"
     } else if(match($1, /SALARY REDUCTION CONT/)){
+        type="purchase"
+        note=""
+    } else if(match($1, /EE SAL RED/)){
         type="purchase"
         note=""
     } else if(match($1, /DIV REINVESTED/)){
