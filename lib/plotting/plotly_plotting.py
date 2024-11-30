@@ -55,7 +55,7 @@ def make_plotly_categories_plot(total_value_df):
                 xref='x',
                 x = annotation['date'],
                 yref = 'y',
-                y = total_value_df.iloc[total_value_df.index.get_loc(annotation['date'], method='backfill')][account],
+                y = total_value_df.loc[total_value_df.index.asof(annotation['date']), account],
 
                 axref='x',
                 ax = annotation['date'],

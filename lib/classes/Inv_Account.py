@@ -19,8 +19,8 @@ class Inv_Account:
                 self.trans.index.min())
         self.date_range = util.date_range_generator(
             self.start_date, self.end_date)
-        self.prices = prices.loc[prices.index.date >=
-                                 self.start_date, self.symbols]
+        self.prices = prices.loc[prices.index >=
+                                 pd.Timestamp(self.start_date), self.symbols]
 
     def __str__(self):
         last_month_values = self.calculate_account_values().iloc[-1]
