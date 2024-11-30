@@ -1,0 +1,14 @@
+name: portfolio
+channels:
+  - defaults
+  - conda-forge  # Add additional channels as needed
+dependencies:
+  - python=3.10  # Specify your Python version
+  - numpy
+  - pandas
+  - scikit-learn
+  - matplotlib
+  - pip
+  - plotly
+  - python-kaleido
+
