@@ -18,9 +18,9 @@ def read_timeseries_csv(file, shape):
         sep=r'\s*,\s*',
         engine='python',
         index_col='date',
-        parse_dates=['date'],
-        date_parser=dateparse
+        parse_dates=['date']
     )
+    data.index = pd.to_datetime(data.index, format='%Y%m%d')
 
     # data['date'] = data['date'].dt.date
     data.index = pd.to_datetime(data.index)
