@@ -3,10 +3,11 @@
   "configurations": [
     {
       "name": "main.py",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/main.py",
       "console": "integratedTerminal",
+      "python": "/home/tom/miniconda3/envs/portfolio/bin/python",
       "justMyCode": true,
       "args": [
         "-np"
