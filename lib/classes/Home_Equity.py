@@ -16,7 +16,7 @@ class Home_Equity:
 
         self.sold = (self.home_equity['note'] == 'sold').any()
 
-        self.end_date = pd.to_datetime('today').date()
+        self.end_date = datetime.date.today()
 
         self.start_date = util.previous_first_of_month(
             self.home_equity.index.min())

@@ -12,7 +12,7 @@ class Bank_Account:
         self.balances = balances[name]
         self.start_date = util.previous_first_of_month(
             self.balances.index.min())
-        self.end_date = pd.to_datetime('today')
+        self.end_date = datetime.date.today()
         self.date_range = util.date_range_generator(
             self.start_date, self.end_date)
 
