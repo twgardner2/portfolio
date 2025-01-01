@@ -121,7 +121,7 @@ class Inv_Account:
         account'''
 
         # Create dataframe to populate
-        df = pd.DataFrame(0, index=self.date_range, columns=self.symbols)
+        df = pd.DataFrame(0, index=self.date_range, columns=self.symbols, dtype=float)
 
         # Iterate over symbols in account
         for symbol in self.symbols:
