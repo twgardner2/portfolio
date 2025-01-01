@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import lib.util.util as util
 import re
+import datetime
 
 
 class Inv_Account:
@@ -10,7 +11,7 @@ class Inv_Account:
         self.category = category
         self.trans = trans[trans['account'] == name]
         self.symbols = self.trans['symbol'].unique()
-        self.end_date = pd.to_datetime('today').date()
+        self.end_date = datetime.date.today()
         if self.trans.shape[0] == 0:
             print(f'!!!Warning: {self.name} has no transactions!!!')
             self.start_date = self.end_date
