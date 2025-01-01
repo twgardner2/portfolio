@@ -16,6 +16,11 @@ accounts_config = {
         'label':'USAA Checking',
         'category': 'bank',
     },
+    'usaa_cd': {
+        'class': 'Bank_Account',
+        'label':'USAA CD',
+        'category': 'bank',
+    },
     'wells_fargo_checking': {
         'class': 'Bank_Account',
         'label':'Wells Fargo Checking',
