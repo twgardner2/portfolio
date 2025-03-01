@@ -40,10 +40,19 @@ def make_plotly_categories_plot(total_value_df):
                             mode = 'lines',
                             name=category))
 
+    # Add trace for total
     fig.add_trace(go.Scatter(x=total_value_df.index,
                         y=total_value_df.sum(axis=1),
                         mode = 'lines',
-                        name='Total'))
+                        name='Total',
+                        line=dict(color='blue')))
+
+    # Add trace for total excluding home equity
+    fig.add_trace(go.Scatter(x=total_value_df.index,
+                        y=total_value_df.sum(axis=1) - total_value_df['home_equity'],
+                        mode = 'lines',
+                        name='Total (excluding Home Equity)',
+                        line=dict(color='blue', dash='dot')))
 
 
     for annotation in category_annotations:
