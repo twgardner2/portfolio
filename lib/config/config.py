@@ -175,4 +175,8 @@ category_annotations = [
         'date': pd.to_datetime('20210926'),
         'text': 'Started at USAF',
     },
+    {
+        'date': pd.to_datetime('20260209'),
+        'text': 'Started at Anduril',
+    },
 ]
