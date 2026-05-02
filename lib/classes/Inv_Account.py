@@ -205,6 +205,6 @@ class Inv_Account:
                 df[f'{symbol}_price']
 
         df[f'{self.name}_total_value'] = df.filter(regex='_value$').sum(axis=1)
-        df = df.filter(regex='_value$')
+        # df = df.filter(regex='_value$')
 
         return (df)

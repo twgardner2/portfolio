@@ -68,6 +68,11 @@ accounts_config = {
         'label': 'Metron 401K',
         'category': 'retirement',
     },
+    'anduril_401k': {
+        'class': 'Inv_Account',
+        'label': 'Anduril 401K',
+        'category': 'retirement',
+    },
     'thrivent': {
         'class': 'Inv_Account',
         'label': 'Thrivent',

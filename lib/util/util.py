@@ -183,7 +183,6 @@ def previous_first_of_month(date=datetime.date.today()):
         return_date = date + relativedelta(months=-1)
     else:
         return_date = datetime.date(year=date.year, month=date.month, day=1)
-
     if not isinstance(return_date, datetime.date):
         print(f'>>>not a date')
         return_date = return_date.date()
